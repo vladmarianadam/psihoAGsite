@@ -1,0 +1,117 @@
+:root {
+  --psiho-primary: #4a6d7c;
+  --psiho-secondary: #c9a882;
+  --psiho-bg: #faf8f5;
+  --psiho-text: #2c3639;
+  --psiho-border: #e6e0d8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Conținutul articolelor (HTML sanitizat) — tipografie lizibilă pentru texte lungi. */
+.article-content {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--psiho-text);
+}
+
+.article-content > *:first-child {
+  margin-top: 0;
+}
+
+.article-content h2 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 2.25rem 0 0.75rem;
+  scroll-margin-top: 96px;
+}
+
+.article-content h3 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  margin: 1.75rem 0 0.5rem;
+  scroll-margin-top: 96px;
+}
+
+.article-content p {
+  margin: 0 0 1.15rem;
+}
+
+.article-content ul,
+.article-content ol {
+  margin: 0 0 1.15rem;
+  padding-left: 1.5rem;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+}
+
+.article-content blockquote {
+  margin: 1.75rem 0;
+  padding: 1rem 1.5rem;
+  border-left: 3px solid var(--psiho-secondary);
+  background: rgba(201, 168, 130, 0.09);
+  border-radius: 0 12px 12px 0;
+  font-style: italic;
+}
+
+.article-content img {
+  border-radius: 12px;
+  margin: 1.5rem 0;
+  height: auto;
+}
+
+.article-content a {
+  color: var(--psiho-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.article-content th,
+.article-content td {
+  border: 1px solid var(--psiho-border);
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+}
+
+/* Accesibilitate: ținta de focus rămâne vizibilă (audit Lighthouse, plan §9). */
+:focus-visible {
+  outline: 3px solid var(--psiho-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,44 @@
+# .NET
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# SQLite (plan §8 faza 0)
+*.db
+*.db-shm
+*.db-wal
+
+# Uploads generate la runtime
+src/PsihoAdinaGghita.Api/wwwroot/uploads/*
+!src/PsihoAdinaGghita.Api/wwwroot/uploads/.gitkeep
+
+# Build-ul clientului copiat în wwwroot pentru rularea într-un singur proces (plan §12)
+src/PsihoAdinaGghita.Api/wwwroot/assets/
+src/PsihoAdinaGghita.Api/wwwroot/index.html
+src/PsihoAdinaGghita.Api/wwwroot/favicon.svg
+
+# Secrete / configurații locale
+appsettings.local.json
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+client/dist/
+dist/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Loguri
+*.log
+logs/
+
+# Publish
+publish/

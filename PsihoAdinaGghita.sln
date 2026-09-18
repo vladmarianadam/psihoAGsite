@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{60B3592B-2DA2-4988-9815-D2CCEEA8AD62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PsihoAdinaGghita.Domain", "src\PsihoAdinaGghita.Domain\PsihoAdinaGghita.Domain.csproj", "{BDB49A4E-0633-4E88-8CCF-95D6D0A5BAAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PsihoAdinaGghita.Application", "src\PsihoAdinaGghita.Application\PsihoAdinaGghita.Application.csproj", "{DFE6C006-EE50-405E-A8B2-7E66799B75DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PsihoAdinaGghita.Infrastructure", "src\PsihoAdinaGghita.Infrastructure\PsihoAdinaGghita.Infrastructure.csproj", "{73745C76-E0BC-4B59-B4CC-1A02DEC8F85C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PsihoAdinaGghita.Api", "src\PsihoAdinaGghita.Api\PsihoAdinaGghita.Api.csproj", "{B570BB7C-F64C-4EAC-8D5B-83075D85C405}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8E3F7EB7-DBBA-4C83-B2BC-F77947C3B12C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PsihoAdinaGghita.Api.Tests", "tests\PsihoAdinaGghita.Api.Tests\PsihoAdinaGghita.Api.Tests.csproj", "{8217E56E-7B6E-426E-90E7-48CA7129001A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BDB49A4E-0633-4E88-8CCF-95D6D0A5BAAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDB49A4E-0633-4E88-8CCF-95D6D0A5BAAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDB49A4E-0633-4E88-8CCF-95D6D0A5BAAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDB49A4E-0633-4E88-8CCF-95D6D0A5BAAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFE6C006-EE50-405E-A8B2-7E66799B75DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE6C006-EE50-405E-A8B2-7E66799B75DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFE6C006-EE50-405E-A8B2-7E66799B75DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFE6C006-EE50-405E-A8B2-7E66799B75DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73745C76-E0BC-4B59-B4CC-1A02DEC8F85C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73745C76-E0BC-4B59-B4CC-1A02DEC8F85C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73745C76-E0BC-4B59-B4CC-1A02DEC8F85C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73745C76-E0BC-4B59-B4CC-1A02DEC8F85C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B570BB7C-F64C-4EAC-8D5B-83075D85C405}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B570BB7C-F64C-4EAC-8D5B-83075D85C405}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B570BB7C-F64C-4EAC-8D5B-83075D85C405}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B570BB7C-F64C-4EAC-8D5B-83075D85C405}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8217E56E-7B6E-426E-90E7-48CA7129001A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8217E56E-7B6E-426E-90E7-48CA7129001A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8217E56E-7B6E-426E-90E7-48CA7129001A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8217E56E-7B6E-426E-90E7-48CA7129001A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BDB49A4E-0633-4E88-8CCF-95D6D0A5BAAB} = {60B3592B-2DA2-4988-9815-D2CCEEA8AD62}
+		{DFE6C006-EE50-405E-A8B2-7E66799B75DB} = {60B3592B-2DA2-4988-9815-D2CCEEA8AD62}
+		{73745C76-E0BC-4B59-B4CC-1A02DEC8F85C} = {60B3592B-2DA2-4988-9815-D2CCEEA8AD62}
+		{B570BB7C-F64C-4EAC-8D5B-83075D85C405} = {60B3592B-2DA2-4988-9815-D2CCEEA8AD62}
+		{8217E56E-7B6E-426E-90E7-48CA7129001A} = {8E3F7EB7-DBBA-4C83-B2BC-F77947C3B12C}
+	EndGlobalSection
+EndGlobal
