@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
-import { Box, Chip, Container, Divider, Grid, Link, Skeleton, Stack, Typography } from '@mui/material'
+import { Box, Chip, Container, Divider, Grid, Link, Skeleton, Stack, Typography, useTheme } from '@mui/material'
 import EmailIcon from '@mui/icons-material/Email'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import PhoneIcon from '@mui/icons-material/Phone'
@@ -31,21 +31,59 @@ const externalLegalLinks: ReadonlyArray<{ label: string; href: string }> = [
   { label: 'SOL', href: site.legal.sol },
 ]
 
-const columnTitleSx = {
-  fontWeight: 700,
-  letterSpacing: '0.08em',
-  textTransform: 'uppercase',
-  color: 'text.primary',
-  mb: 2,
-} as const
+/**
+ * Culorile footerului. Pe fundal deschis (tema „calm”) se folosesc culorile temei; peste
+ * fotografia întunecată (tema „seaside”) textul trece pe alb translucid.
+ */
+interface FooterTone {
+  title: string
+  text: string
+  strong: string
+  link: string
+  linkHover: string
+  icon: string
+  divider: string
+}
 
-const footerLinkSx = {
-  color: 'text.secondary',
-  fontSize: '0.9375rem',
-  '&:hover': { color: 'primary.main' },
-} as const
+const lightTone: FooterTone = {
+  title: 'text.primary',
+  text: 'text.secondary',
+  strong: 'text.primary',
+  link: 'text.secondary',
+  linkHover: 'primary.main',
+  icon: 'primary.main',
+  divider: 'divider',
+}
+
+const darkTone: FooterTone = {
+  title: 'common.white',
+  text: 'rgba(255, 255, 255, 0.76)',
+  strong: 'common.white',
+  link: 'rgba(255, 255, 255, 0.78)',
+  linkHover: 'secondary.main',
+  icon: 'secondary.main',
+  divider: 'rgba(255, 255, 255, 0.16)',
+}
 
 export default function Footer() {
+  const { palette } = useTheme()
+  const imagery = palette.brand.imagery
+  const tone = imagery ? darkTone : lightTone
+
+  const columnTitleSx = {
+    fontWeight: 700,
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase',
+    color: tone.title,
+    mb: 2,
+  } as const
+
+  const footerLinkSx = {
+    color: tone.link,
+    fontSize: '0.9375rem',
+    '&:hover': { color: tone.linkHover },
+  } as const
+
   const [services, setServices] = useState<ServiceListItemDto[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -76,19 +114,34 @@ export default function Footer() {
         mt: 'auto',
         pt: { xs: 6, md: 8 },
         pb: 3,
-        backgroundColor: 'background.paper',
+        color: tone.text,
+        backgroundColor: imagery ? palette.brand.primaryDark : 'background.paper',
         borderTop: '1px solid',
-        borderColor: 'divider',
+        borderColor: imagery ? 'transparent' : 'divider',
+        // Cu fotografie: banda de faleză cu maci, întunecată ca textul să rămână lizibil.
+        ...(imagery && {
+          backgroundImage: [
+            `linear-gradient(180deg, rgba(${imagery.overlayRgb}, 0.94) 0%, rgba(${imagery.overlayRgb}, 0.80) 45%, rgba(${imagery.overlayRgb}, 0.90) 100%)`,
+            `url(${imagery.footer})`,
+          ].join(', '),
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 40%',
+          backgroundRepeat: 'no-repeat',
+        }),
       }}
     >
       <Container maxWidth="lg">
         <Grid container spacing={{ xs: 4, md: 5 }}>
           {/* 1. Identitatea cabinetului */}
           <Grid size={{ xs: 12, md: 3 }}>
-            <Typography variant="h4" component="p" sx={{ fontSize: '1.25rem', mb: 1.5 }}>
+            <Typography
+              variant="h4"
+              component="p"
+              sx={{ fontSize: '1.25rem', mb: 1.5, color: tone.title }}
+            >
               {site.name}
             </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2.5 }}>
+            <Typography variant="body2" sx={{ color: tone.text, mb: 2.5 }}>
               Sprijin psihologic pentru copii, adolescenți și adulți — ședințe în cabinet
               sau online, într-un cadru confidențial și lipsit de grabă.
             </Typography>
@@ -97,7 +150,16 @@ export default function Footer() {
               label={site.copsi}
               variant="outlined"
               size="small"
-              sx={{ height: 'auto', py: 0.75, '& .MuiChip-label': { whiteSpace: 'normal' } }}
+              sx={{
+                height: 'auto',
+                py: 0.75,
+                '& .MuiChip-label': { whiteSpace: 'normal' },
+                ...(imagery && {
+                  color: tone.text,
+                  borderColor: tone.divider,
+                  '& .MuiChip-icon': { color: tone.icon },
+                }),
+              }}
             />
           </Grid>
 
@@ -126,7 +188,11 @@ export default function Footer() {
               {loading &&
                 [0, 1, 2, 3].map((index) => (
                   <Box component="li" key={index}>
-                    <Skeleton variant="text" width="85%" />
+                    <Skeleton
+                      variant="text"
+                      width="85%"
+                      sx={imagery ? { bgcolor: 'rgba(255, 255, 255, 0.14)' } : undefined}
+                    />
                   </Box>
                 ))}
 
@@ -156,8 +222,8 @@ export default function Footer() {
             </Typography>
             <Stack spacing={1.25}>
               <Stack direction="row" spacing={1.25}>
-                <LocationOnIcon fontSize="small" sx={{ color: 'primary.main', mt: 0.25 }} />
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                <LocationOnIcon fontSize="small" sx={{ color: tone.icon, mt: 0.25 }} />
+                <Typography variant="body2" sx={{ color: tone.text }}>
                   {site.address.street}
                   <br />
                   {site.address.city}, {site.address.country}
@@ -165,14 +231,14 @@ export default function Footer() {
               </Stack>
 
               <Stack direction="row" spacing={1.25} alignItems="center">
-                <PhoneIcon fontSize="small" sx={{ color: 'primary.main' }} />
+                <PhoneIcon fontSize="small" sx={{ color: tone.icon }} />
                 <Link href={phoneHref} sx={footerLinkSx}>
                   {site.phone}
                 </Link>
               </Stack>
 
               <Stack direction="row" spacing={1.25} alignItems="center">
-                <EmailIcon fontSize="small" sx={{ color: 'primary.main' }} />
+                <EmailIcon fontSize="small" sx={{ color: tone.icon }} />
                 <Link href={mailHref} sx={{ ...footerLinkSx, wordBreak: 'break-all' }}>
                   {site.email}
                 </Link>
@@ -195,10 +261,10 @@ export default function Footer() {
                   spacing={2}
                   sx={{ maxWidth: 260 }}
                 >
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  <Typography variant="body2" sx={{ color: tone.text }}>
                     {entry.day}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 500 }}>
+                  <Typography variant="body2" sx={{ color: tone.strong, fontWeight: 500 }}>
                     {entry.hours}
                   </Typography>
                 </Stack>
@@ -207,7 +273,7 @@ export default function Footer() {
           </Grid>
         </Grid>
 
-        <Divider sx={{ mt: { xs: 5, md: 6 }, mb: 2.5 }} />
+        <Divider sx={{ mt: { xs: 5, md: 6 }, mb: 2.5, borderColor: tone.divider }} />
 
         {/* Bara de jos */}
         <Stack
@@ -216,7 +282,7 @@ export default function Footer() {
           alignItems={{ xs: 'flex-start', md: 'center' }}
           spacing={2}
         >
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          <Typography variant="body2" sx={{ color: tone.text }}>
             © {new Date().getFullYear()} {site.name}. Toate drepturile rezervate.
           </Typography>
 

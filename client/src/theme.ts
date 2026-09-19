@@ -1,5 +1,8 @@
 import { createTheme, responsiveFontSizes, type Theme } from '@mui/material/styles'
 
+import seasideHero from './assets/seaside-hero.jpg'
+import seasideFooter from './assets/seaside-footer.jpg'
+
 /** Identificatorii temelor disponibile. `calm` este tema implicită (plan §6). */
 export type ThemeId = 'calm' | 'seaside'
 
@@ -22,6 +25,20 @@ export interface BrandPalette {
   border: string
   /** Culoarea umbrelor, ca triplet RGB („44, 54, 57”), pentru rgba(). */
   shadowRgb: string
+  /** Fundalul secțiunilor „tint” — o valoare validă pentru `background-image` (gradient CSS). */
+  sectionTint: string
+  /** Fundalul benzii de apel la acțiune (gradient CSS). */
+  ctaGradient: string
+  /**
+   * Fotografii de atmosferă pentru hero și footer. Când lipsesc, secțiunile folosesc
+   * gradientele discrete ale temei; când există, textul trece pe deschis peste imagine.
+   */
+  imagery?: {
+    hero: string
+    footer: string
+    /** Culoarea de bază a suprapunerii peste fotografii, ca triplet RGB. */
+    overlayRgb: string
+  }
 }
 
 declare module '@mui/material/styles' {
@@ -48,6 +65,11 @@ export const palettes: Record<ThemeId, BrandPalette> = {
     textMuted: '#5B686C',
     border: '#E6E0D8',
     shadowRgb: '44, 54, 57',
+    sectionTint: 'linear-gradient(#C9A88214, #C9A88214)',
+    ctaGradient: [
+      'radial-gradient(90% 130% at 100% 0%, #AD8B6459 0%, transparent 58%)',
+      'linear-gradient(135deg, #4A6D7C 0%, #365360 100%)',
+    ].join(', '),
   },
   // „Răsărit la mare” — inspirată din fotografia cu marea în amurg și maci pe faleză:
   // albastrul adânc al apei, cerul ambră de la orizont, nisipul cald și roșul macilor.
@@ -55,15 +77,27 @@ export const palettes: Record<ThemeId, BrandPalette> = {
     primary: '#3F5A73',
     primaryDark: '#2C4256',
     primaryLight: '#7A97B0',
-    secondary: '#E8A26A',
+    secondary: '#F29B5C',
     secondaryDark: '#C97D45',
     accent: '#D9432B',
-    background: '#F8F2E9',
+    background: '#FBF3E8',
     surface: '#FFFFFF',
     text: '#22303B',
     textMuted: '#55656F',
-    border: '#E4DACC',
+    border: '#E9DCCB',
     shadowRgb: '34, 48, 59',
+    // Amurg peste nisip: piersică sus, albastru de cer jos.
+    sectionTint: [
+      'radial-gradient(120% 90% at 0% 0%, #F29B5C2E 0%, transparent 55%)',
+      'radial-gradient(110% 90% at 100% 100%, #7A97B033 0%, transparent 55%)',
+      'linear-gradient(180deg, #FFF7EE 0%, #F6EEE4 100%)',
+    ].join(', '),
+    // Soare la orizont → apă adâncă; textul alb rămâne lizibil pe toată lungimea.
+    ctaGradient: [
+      'radial-gradient(70% 120% at 10% 0%, #F29B5C66 0%, transparent 55%)',
+      'linear-gradient(115deg, #B8482A 0%, #8E3A44 38%, #3F5A73 72%, #22364B 100%)',
+    ].join(', '),
+    imagery: { hero: seasideHero, footer: seasideFooter, overlayRgb: '20, 38, 56' },
   },
 }
 

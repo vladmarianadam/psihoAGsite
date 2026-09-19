@@ -28,12 +28,10 @@ export default function CtaBanner({
         px: { xs: 3, sm: 5, md: 7 },
         py: { xs: 5, md: 7 },
         color: 'common.white',
-        // Gradient decorativ din paleta temei active.
-        backgroundColor: brand.primary,
-        backgroundImage: [
-          `radial-gradient(90% 130% at 100% 0%, ${brand.secondaryDark}59 0%, transparent 58%)`,
-          `linear-gradient(135deg, ${brand.primary} 0%, ${brand.primaryDark} 100%)`,
-        ].join(', '),
+        // Gradient decorativ definit de tema activă.
+        backgroundColor: brand.primaryDark,
+        backgroundImage: brand.ctaGradient,
+        boxShadow: `0 24px 60px rgba(${brand.shadowRgb}, 0.18)`,
       })}
     >
       <Box sx={{ position: 'relative', maxWidth: '62ch' }}>

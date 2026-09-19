@@ -172,8 +172,9 @@ function Section({ children, tone = 'default', id }: SectionProps) {
       id={id}
       sx={({ palette: { brand } }) => ({
         py: { xs: 7, md: 11 },
-        bgcolor:
-          tone === 'paper' ? 'background.paper' : tone === 'tint' ? `${brand.secondary}14` : 'transparent',
+        bgcolor: tone === 'paper' ? 'background.paper' : 'transparent',
+        // „tint” poate fi o culoare plată sau un gradient, în funcție de temă.
+        backgroundImage: tone === 'tint' ? brand.sectionTint : 'none',
       })}
     >
       <Container maxWidth="lg">{children}</Container>
@@ -203,22 +204,45 @@ function CheckItem({ children }: CheckItemProps) {
 // -------------------------------------------------------------- 1. Hero ---
 
 function HeroSection() {
+  const { palette } = useTheme()
+  const { brand } = palette
+  const imagery = brand.imagery
+  // Cu fotografie de fundal, textul trece pe deschis; altfel rămân gradientele discrete.
+  const onImage = Boolean(imagery)
+
+  const heroBackground = imagery
+    ? [
+        `linear-gradient(100deg, rgba(${imagery.overlayRgb}, 0.88) 0%, rgba(${imagery.overlayRgb}, 0.66) 46%, rgba(${imagery.overlayRgb}, 0.14) 100%)`,
+        `linear-gradient(180deg, rgba(${imagery.overlayRgb}, 0.10) 0%, transparent 25%, transparent 70%, rgba(${imagery.overlayRgb}, 0.50) 100%)`,
+        `url(${imagery.hero})`,
+      ].join(', ')
+    : [
+        `radial-gradient(90% 110% at 6% 0%, ${brand.secondary}2E 0%, transparent 58%)`,
+        `radial-gradient(80% 100% at 100% 24%, ${brand.primaryLight}26 0%, transparent 60%)`,
+      ].join(', ')
+
+  const eyebrowColor = onImage ? brand.secondary : palette.secondary.dark
+  const bodyColor = onImage ? 'rgba(255, 255, 255, 0.84)' : palette.text.secondary
+
   return (
     <Box
       component="section"
-      sx={({ palette: { brand } }) => ({
+      sx={{
         position: 'relative',
         overflow: 'hidden',
-        pt: { xs: 6, md: 10 },
-        pb: { xs: 7, md: 12 },
-        // Gradient decorativ din paleta temei active (fără imagini externe).
-        backgroundImage: [
-          `radial-gradient(90% 110% at 6% 0%, ${brand.secondary}2E 0%, transparent 58%)`,
-          `radial-gradient(80% 100% at 100% 24%, ${brand.primaryLight}26 0%, transparent 60%)`,
-        ].join(', '),
-      })}
+        // Cu fotografie, secțiunea urcă sub bara de navigare (transparentă), ca imaginea să
+        // umple tot capul paginii; înălțimea barei e compensată prin padding.
+        mt: onImage ? { xs: -8.5, md: -10 } : 0,
+        pt: onImage ? { xs: 6 + 8.5, md: 12 + 10 } : { xs: 6, md: 10 },
+        pb: { xs: onImage ? 11 : 7, md: onImage ? 16 : 12 },
+        color: onImage ? 'common.white' : 'text.primary',
+        backgroundImage: heroBackground,
+        backgroundSize: 'cover',
+        backgroundPosition: { xs: 'center 28%', md: 'center 36%' },
+        backgroundRepeat: 'no-repeat',
+      }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ position: 'relative' }}>
         <Grid container spacing={{ xs: 5, md: 7 }} alignItems="center">
           <Grid size={{ xs: 12, md: 7 }}>
             <Typography
@@ -228,28 +252,43 @@ function HeroSection() {
                 fontWeight: 600,
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
-                color: 'secondary.dark',
+                color: eyebrowColor,
               }}
             >
               {site.role}
             </Typography>
 
-            <Typography variant="h1" sx={{ mt: 1.5, maxWidth: '18ch' }}>
+            <Typography
+              variant="h1"
+              sx={{
+                mt: 1.5,
+                maxWidth: '18ch',
+                color: 'inherit',
+                textShadow: onImage ? `0 2px 24px rgba(${imagery?.overlayRgb}, 0.45)` : 'none',
+              }}
+            >
               {site.name}
             </Typography>
 
-            <Typography variant="h5" component="p" sx={{ mt: 2.5, color: 'text.secondary' }}>
+            <Typography variant="h5" component="p" sx={{ mt: 2.5, color: bodyColor }}>
               {site.tagline}
             </Typography>
 
-            <Typography sx={{ mt: 3, maxWidth: '58ch', fontSize: '1.0625rem', color: 'text.secondary' }}>
+            <Typography sx={{ mt: 3, maxWidth: '58ch', fontSize: '1.0625rem', color: bodyColor }}>
               Uneori e greu de pus în cuvinte ce anume nu mai merge — știi doar că e obositor și că
               nu mai vrei să duci totul singur. Aici găsești un spațiu liniștit și confidențial, în
               care putem înțelege împreună ce se întâmplă și ce pași au sens pentru tine.
             </Typography>
 
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4.5 }}>
-              <Button component={RouterLink} to="/contact" size="large" variant="contained">
+              <Button
+                component={RouterLink}
+                to="/contact"
+                size="large"
+                variant="contained"
+                color={onImage ? 'secondary' : 'primary'}
+                sx={onImage ? { boxShadow: `0 12px 30px ${brand.secondary}59` } : undefined}
+              >
                 Solicită o programare
               </Button>
               <Button
@@ -258,6 +297,18 @@ function HeroSection() {
                 size="large"
                 variant="outlined"
                 startIcon={<PhoneRoundedIcon />}
+                sx={
+                  onImage
+                    ? {
+                        color: 'common.white',
+                        borderColor: 'rgba(255, 255, 255, 0.55)',
+                        '&:hover': {
+                          borderColor: 'common.white',
+                          backgroundColor: 'rgba(255, 255, 255, 0.10)',
+                        },
+                      }
+                    : undefined
+                }
               >
                 {site.phone}
               </Button>
@@ -270,8 +321,10 @@ function HeroSection() {
                 borderRadius: 3,
                 overflow: 'hidden',
                 border: '1px solid',
-                borderColor: 'divider',
-                boxShadow: '0 24px 60px rgba(44, 54, 57, 0.10)',
+                borderColor: onImage ? 'rgba(255, 255, 255, 0.35)' : 'divider',
+                boxShadow: onImage
+                  ? `0 30px 70px rgba(${imagery?.overlayRgb}, 0.45)`
+                  : `0 24px 60px rgba(${brand.shadowRgb}, 0.10)`,
               }}
             >
               <PhotoImage
@@ -283,6 +336,36 @@ function HeroSection() {
           </Grid>
         </Grid>
       </Container>
+
+      {/* Val decorativ care face tranziția către secțiunea următoare (doar cu fotografie). */}
+      {onImage && (
+        <Box
+          component="svg"
+          aria-hidden="true"
+          viewBox="0 0 1440 90"
+          preserveAspectRatio="none"
+          sx={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: -1,
+            width: '100%',
+            height: { xs: 44, md: 90 },
+            display: 'block',
+            color: 'background.paper',
+          }}
+        >
+          <path
+            d="M0 52 C 180 96, 360 96, 540 58 S 900 6, 1100 40 S 1360 84, 1440 44 L1440 90 L0 90 Z"
+            fill="currentColor"
+          />
+          <path
+            d="M0 70 C 240 100, 480 88, 720 62 S 1200 24, 1440 66 L1440 90 L0 90 Z"
+            fill="currentColor"
+            opacity="0.55"
+          />
+        </Box>
+      )}
     </Box>
   )
 }

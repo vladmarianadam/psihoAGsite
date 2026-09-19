@@ -9,13 +9,15 @@ import { useThemeMode } from '../../themeMode'
 interface ThemeToggleProps {
   /** Dimensiunea butonului; `small` în bara de navigare, `medium` în meniul mobil. */
   size?: 'small' | 'medium'
+  /** Culoarea iconiței (cheie din paletă sau CSS); implicit culoarea textului. */
+  color?: string
 }
 
 /**
  * Comută între tema „Calm” și „Răsărit la mare”. Iconița arată tema către care se trece,
  * iar eticheta accesibilă spune explicit ce se întâmplă la apăsare.
  */
-export default function ThemeToggle({ size = 'small' }: ThemeToggleProps) {
+export default function ThemeToggle({ size = 'small', color = 'text.primary' }: ThemeToggleProps) {
   const { themeId, toggleTheme } = useThemeMode()
   const nextId = themeId === 'calm' ? 'seaside' : 'calm'
   const label = `Schimbă tema: ${themeMeta[nextId].label}`
@@ -27,7 +29,7 @@ export default function ThemeToggle({ size = 'small' }: ThemeToggleProps) {
         aria-label={label}
         size={size}
         sx={(theme) => ({
-          color: 'text.primary',
+          color,
           '&:hover': { backgroundColor: alpha(theme.palette.primary.main, 0.08) },
         })}
       >

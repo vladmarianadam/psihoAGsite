@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link as RouterLink, NavLink } from 'react-router-dom'
+import { Link as RouterLink, NavLink, useLocation } from 'react-router-dom'
 import {
   AppBar,
   Box,
@@ -10,6 +10,7 @@ import {
   Toolbar,
   Typography,
   useScrollTrigger,
+  useTheme,
 } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import MenuIcon from '@mui/icons-material/Menu'
@@ -32,6 +33,13 @@ export default function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   // Fundal transparent cât timp pagina e la început, opac + blur după derulare.
   const scrolled = useScrollTrigger({ disableHysteresis: true, threshold: 0 })
+  const { pathname } = useLocation()
+  const { palette } = useTheme()
+  // Pe pagina principală, tema cu fotografie ridică hero-ul sub bara de navigare: textul
+  // trece pe deschis până când vizitatorul derulează și bara primește fundal opac.
+  const overPhoto = Boolean(palette.brand.imagery) && pathname === '/' && !scrolled
+  const inkColor = overPhoto ? 'common.white' : 'text.primary'
+  const inkMuted = overPhoto ? 'rgba(255, 255, 255, 0.78)' : 'text.secondary'
 
   return (
     <>
@@ -40,10 +48,11 @@ export default function Navbar() {
         sx={(theme) => ({
           backgroundColor: scrolled ? alpha(theme.palette.background.default, 0.88) : 'transparent',
           backdropFilter: scrolled ? 'saturate(180%) blur(12px)' : 'none',
-          boxShadow: scrolled ? '0 6px 24px rgba(44, 54, 57, 0.08)' : 'none',
+          boxShadow: scrolled ? `0 6px 24px rgba(${theme.palette.brand.shadowRgb}, 0.08)` : 'none',
           borderBottom: '1px solid',
           borderColor: scrolled ? 'divider' : 'transparent',
-          transition: 'background-color .3s ease, box-shadow .3s ease, border-color .3s ease',
+          color: inkColor,
+          transition: 'background-color .3s ease, box-shadow .3s ease, border-color .3s ease, color .3s ease',
         })}
       >
         <Container maxWidth="lg">
@@ -64,7 +73,7 @@ export default function Navbar() {
               <Typography
                 variant="h4"
                 component="span"
-                sx={{ fontSize: { xs: '1.15rem', md: '1.35rem' }, lineHeight: 1.15, color: 'text.primary' }}
+                sx={{ fontSize: { xs: '1.15rem', md: '1.35rem' }, lineHeight: 1.15, color: inkColor }}
               >
                 {site.shortName}
               </Typography>
@@ -72,7 +81,7 @@ export default function Navbar() {
                 variant="caption"
                 component="span"
                 sx={{
-                  color: 'text.secondary',
+                  color: inkMuted,
                   fontSize: { xs: '0.625rem', md: '0.6875rem' },
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
@@ -101,13 +110,19 @@ export default function Navbar() {
                   disableRipple
                   sx={(theme) => ({
                     px: 1.75,
-                    color: 'text.primary',
+                    color: inkColor,
                     fontWeight: 500,
-                    '&:hover': { backgroundColor: alpha(theme.palette.primary.main, 0.06) },
+                    '&:hover': {
+                      backgroundColor: overPhoto
+                        ? 'rgba(255, 255, 255, 0.10)'
+                        : alpha(theme.palette.primary.main, 0.06),
+                    },
                     '&.active': {
-                      color: 'primary.main',
+                      color: overPhoto ? 'secondary.main' : 'primary.main',
                       fontWeight: 600,
-                      backgroundColor: alpha(theme.palette.primary.main, 0.09),
+                      backgroundColor: overPhoto
+                        ? 'rgba(255, 255, 255, 0.12)'
+                        : alpha(theme.palette.primary.main, 0.09),
                     },
                   })}
                 >
@@ -122,15 +137,20 @@ export default function Navbar() {
               spacing={1.5}
               sx={{ display: { xs: 'none', md: 'flex' }, ml: 1.5 }}
             >
-              <ThemeToggle />
+              <ThemeToggle color={inkColor} />
               <Button
                 href={phoneHref}
                 startIcon={<PhoneIcon fontSize="small" />}
-                sx={{ color: 'text.primary', fontWeight: 500 }}
+                sx={{ color: inkColor, fontWeight: 500 }}
               >
                 {site.phone}
               </Button>
-              <Button component={RouterLink} to="/contact" variant="contained" color="primary">
+              <Button
+                component={RouterLink}
+                to="/contact"
+                variant="contained"
+                color={overPhoto ? 'secondary' : 'primary'}
+              >
                 Solicită o programare
               </Button>
             </Stack>
@@ -142,11 +162,11 @@ export default function Navbar() {
               spacing={0.5}
               sx={{ display: { xs: 'flex', md: 'none' } }}
             >
-              <ThemeToggle size="medium" />
+              <ThemeToggle size="medium" color={inkColor} />
               <IconButton
                 href={phoneHref}
                 aria-label={`Sună la ${site.phone}`}
-                sx={{ color: 'primary.main' }}
+                sx={{ color: overPhoto ? 'secondary.main' : 'primary.main' }}
               >
                 <PhoneIcon />
               </IconButton>
@@ -155,7 +175,7 @@ export default function Navbar() {
                 aria-label="Deschide meniul de navigare"
                 aria-expanded={drawerOpen}
                 aria-controls="meniu-mobil"
-                sx={{ color: 'text.primary' }}
+                sx={{ color: inkColor }}
               >
                 <MenuIcon />
               </IconButton>
