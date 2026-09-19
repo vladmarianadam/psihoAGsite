@@ -193,16 +193,17 @@ public class DbSeeder
         {
             new()
             {
-                Name = "Psihoterapie individuală",
-                ShortDescription = "Un spațiu confidențial, doar al tău, în care putem lucra pe anxietate, stări depresive, epuizare sau evenimente dificile de viață. Lucrăm împreună la ritmul tău, cu obiective stabilite de comun acord.",
+                Name = "Psihoterapie cognitiv-comportamentală și dezvoltare personală",
+                ShortDescription = "Psihoterapie cognitiv-comportamentală, individuală sau de grup, pentru adolescenți și adulți. Lucrăm pe anxietate, stări depresive, epuizare sau evenimente dificile de viață, la ritmul tău și cu obiective stabilite de comun acord.",
                 LongDescriptionHtml =
                     """
-                    <p>Psihoterapia individuală este o colaborare între tine și mine, construită pe încredere și pe un ritm pe care îl stabilim împreună. În primele ședințe ne concentrăm pe a înțelege ce te aduce în cabinet, ce ai încercat deja și ce ți-ar plăcea să fie diferit. Din această imagine comună formulăm obiective concrete, la care revenim periodic.</p>
-                    <p>Abordarea mea este integrativă, cu accent pe terapia cognitiv-comportamentală: identificăm gândurile automate și comportamentele care întrețin suferința și exersăm alternative, atât în ședință, cât și între ședințe. Când tema o cere, folosim și tehnici de reglare emoțională, mindfulness sau lucru cu istoria personală.</p>
+                    <p>Psihoterapia cognitiv-comportamentală este o colaborare între tine și mine, construită pe încredere și pe un ritm pe care îl stabilim împreună. În primele ședințe ne concentrăm pe a înțelege ce te aduce în cabinet, ce ai încercat deja și ce ți-ar plăcea să fie diferit. Din această imagine comună formulăm obiective concrete, la care revenim periodic.</p>
+                    <p>Metoda are un principiu simplu: identificăm gândurile automate și comportamentele care întrețin suferința și exersăm alternative, atât în ședință, cât și între ședințe. Când tema o cere, folosim și tehnici de reglare emoțională, de gestionare a anxietății sau de lucru cu istoria personală.</p>
+                    <p>Sunt atestată pentru psihoterapie cognitiv-comportamentală atât individuală, cât și de grup. Unele teme — anxietatea socială, stima de sine, abilitățile de relaționare — avansează mai repede într-un grup mic; alegem împreună formatul potrivit.</p>
                     <p>O ședință durează 50 de minute și, la început, are loc de obicei săptămânal. Frecvența se poate rări pe măsură ce apar schimbările pe care le urmărim. Nu există un număr fix de ședințe: unele teme se clarifică în 8–12 întâlniri, altele cer un proces mai lung.</p>
                     <p><strong>Pentru cine este potrivit:</strong></p>
                     <ul>
-                      <li>Persoane care trăiesc anxietate, atacuri de panică sau îngrijorare permanentă.</li>
+                      <li>Adolescenți și adulți care trăiesc anxietate, atacuri de panică sau îngrijorare permanentă.</li>
                       <li>Persoane cu stări depresive, lipsă de energie sau pierderea sensului.</li>
                       <li>Cei care trec printr-o pierdere, o despărțire sau o schimbare majoră de viață.</li>
                       <li>Oricine simte epuizare profesională și nu mai găsește resurse pentru cotidian.</li>
@@ -219,98 +220,72 @@ public class DbSeeder
             },
             new()
             {
-                Name = "Terapie de cuplu",
-                ShortDescription = "Ședințe pentru cupluri care se ceartă mereu despre același lucru, s-au îndepărtat sau trec printr-o criză de încredere. Lucrăm pe comunicare, nevoi nespuse și reconstrucția legăturii.",
+                Name = "Intervenție psihologică pentru copii și adolescenți",
+                ShortDescription = "Sprijin pentru copii și adolescenți cu dificultăți comportamentale sau tulburări de neurodezvoltare. Intervenția este adaptată vârstei, iar părinții sunt parte din proces la fiecare pas.",
                 LongDescriptionHtml =
                     """
-                    <p>În terapia de cuplu nu caut să stabilesc cine are dreptate. Rolul meu este să fac vizibil tiparul în care intrați amândoi atunci când apare tensiunea și să vă ajut să vă auziți din nou, dincolo de reproșuri. Prima întâlnire este comună; uneori propun și câte o ședință individuală, pentru a înțelege mai bine perspectiva fiecăruia.</p>
-                    <p>Lucrăm cu situații reale din ultimele săptămâni: cine spune ce, ce interpretează celălalt, unde se rupe conversația. În loc de sfaturi generale, exersăm în ședință moduri concrete de a formula o nemulțumire, de a cere ceva și de a repara după un conflict.</p>
-                    <p>Ședințele durează 80 de minute, pentru ca amândoi să aveți spațiu real de vorbit, și au loc de obicei la două săptămâni, ca să existe timp pentru exercițiu între întâlniri. Confidențialitatea se aplică relației, nu unuia dintre parteneri împotriva celuilalt.</p>
+                    <p>Copiii și adolescenții nu vin cu aceleași cuvinte ca adulții: dificultatea se vede mai degrabă în comportament — opoziție, izbucniri greu de gestionat, retragere, refuzul școlii, somn dat peste cap. Intervenția pornește de la o etapă de înțelegere, în care stau de vorbă cu copilul și cu părinții, ca să văd ce întreține situația și ce resurse există deja.</p>
+                    <p>Pentru copiii cu tulburări de neurodezvoltare, lucrul este structurat și concret: rutine previzibile, sarcini împărțite în pași mici, întăriri clare și exerciții de autoreglare. Pentru adolescenți, accentul se mută pe recunoașterea emoțiilor, gestionarea impulsului și relația cu propria imagine.</p>
+                    <p>Părinții nu sunt lăsați în afara procesului. Primesc periodic feedback și strategii aplicabile acasă, pentru că cea mai mare parte a schimbării se întâmplă între ședințe, în viața de zi cu zi.</p>
                     <p><strong>Pentru cine este potrivit:</strong></p>
                     <ul>
-                      <li>Cupluri prinse în conflicte repetitive, care se sting fără să se rezolve.</li>
-                      <li>Parteneri care s-au distanțat emoțional sau trăiesc împreună „ca doi colegi de apartament”.</li>
-                      <li>Relații afectate de o infidelitate sau de o ruptură de încredere.</li>
-                      <li>Cupluri care traversează o schimbare importantă: mutare, naștere, boală, șomaj.</li>
-                      <li>Parteneri care vor să decidă în mod asumat dacă merg mai departe împreună sau separat.</li>
+                      <li>Copii cu dificultăți comportamentale: opoziție, agresivitate, crize de furie.</li>
+                      <li>Copii și adolescenți cu tulburări de neurodezvoltare, inclusiv ADHD.</li>
+                      <li>Adolescenți cu anxietate, dificultăți școlare sau probleme de relaționare.</li>
+                      <li>Familii care trec printr-o schimbare majoră resimțită puternic de copil.</li>
+                      <li>Situații în care școala a semnalat nevoia unei evaluări sau a unui sprijin.</li>
                     </ul>
                     """,
-                Price = 350m,
-                PriceUnit = "/ ședință 80 min",
-                DurationMinutes = 80,
-                SessionMode = SessionMode.Both,
-                IconName = "Favorite",
+                Price = null,
+                PriceUnit = null,
+                DurationMinutes = 50,
+                SessionMode = SessionMode.Cabinet,
+                IconName = "ChildCare",
                 DisplayOrder = 2,
                 IsActive = true,
             },
             new()
             {
-                Name = "Consiliere pentru copii și adolescenți",
-                ShortDescription = "Sprijin pentru copii și adolescenți care trec prin anxietate, dificultăți la școală, furie greu de gestionat sau schimbări în familie. Părinții sunt parte din proces, la fiecare pas.",
+                Name = "Consiliere psihologică pentru părinți",
+                ShortDescription = "Ședințe dedicate părinților care vor să înțeleagă ce se întâmplă cu copilul lor și cum să reacționeze. Fără rețete universale: pornim de la situația concretă din familia ta.",
                 LongDescriptionHtml =
                     """
-                    <p>Copiii nu vin în cabinet spunând „am anxietate”. Ei ne arată ce simt prin somn agitat, dureri de burtă dimineața, refuzul de a merge la școală, izbucniri de furie sau retragere. Prima întâlnire este cu părinții, ca să înțeleg contextul și istoria, iar de la a doua lucrez direct cu copilul, adaptând instrumentele la vârsta lui.</p>
-                    <p>Cu cei mici folosesc joc, desen și povești terapeutice: acestea le permit să exprime ce nu pot încă spune în cuvinte. Cu adolescenții, conversația este centrală, dar plecăm de la temele lor — școală, prieteni, imagine de sine, relații — nu de la agenda adulților.</p>
-                    <p>La fiecare 4–5 ședințe programez o întâlnire de feedback cu părinții, în care discutăm direcția și ce se poate schimba acasă. Ce îmi povestește copilul rămâne confidențial; ce transmit părinților sunt teme generale și recomandări, agreate în prealabil cu el.</p>
+                    <p>Consilierea pentru părinți nu presupune că ceva e greșit în felul în care crești copilul. Presupune doar că unele situații sunt mai greu de dus singur: o etapă de dezvoltare care te ia prin surprindere, un diagnostic recent, un comportament care se repetă deși ai încercat tot ce ți-a venit în minte.</p>
+                    <p>Lucrăm pe situații concrete, nu pe teorie. Ne uităm la ce se întâmplă înainte și după comportamentul care te îngrijorează, la ce funcționează deja și la ce se poate ajusta. Stabilim împreună câteva strategii clare, pe care le testezi acasă și le revedem la ședința următoare.</p>
+                    <p>Ședințele pot avea loc cu un singur părinte sau cu amândoi. Uneori sunt suficiente câteva întâlniri; alteori consilierea însoțește în paralel intervenția directă cu copilul.</p>
                     <p><strong>Pentru cine este potrivit:</strong></p>
                     <ul>
-                      <li>Copii de la 6 ani și adolescenți până la 18 ani.</li>
-                      <li>Anxietate de separare, frică de școală, teamă intensă de evaluare.</li>
-                      <li>Furie, opoziție sau comportamente greu de gestionat acasă și la școală.</li>
-                      <li>Familii care traversează un divorț, o mutare sau o pierdere.</li>
-                      <li>Adolescenți cu stimă de sine scăzută, izolare sau tulburări de somn.</li>
+                      <li>Părinți ai unor copii cu dificultăți comportamentale sau de neurodezvoltare.</li>
+                      <li>Părinți care primesc recent un diagnostic și nu știu care sunt pașii următori.</li>
+                      <li>Familii în care aceleași conflicte se repetă în jurul temelor, ecranelor sau somnului.</li>
+                      <li>Părinți de adolescenți, în perioada în care comunicarea devine dificilă.</li>
+                      <li>Oricine vrea o perspectivă profesionistă înainte de a lua o decizie privind copilul.</li>
                     </ul>
                     """,
-                Price = 250m,
-                PriceUnit = "/ ședință 50 min",
+                Price = null,
+                PriceUnit = null,
                 DurationMinutes = 50,
-                SessionMode = SessionMode.Cabinet,
-                IconName = "ChildCare",
+                SessionMode = SessionMode.Both,
+                IconName = "Groups",
                 DisplayOrder = 3,
                 IsActive = true,
             },
             new()
             {
-                Name = "Consiliere online",
-                ShortDescription = "Aceeași ședință de 50 de minute, prin videoconferință securizată. O variantă practică dacă locuiești în altă localitate, călătorești des sau ai un program greu de potrivit cu deplasarea.",
+                Name = "Evaluări psihologice pentru adolescenți și adulți",
+                ShortDescription = "Evaluare structurată prin interviu clinic și teste standardizate: ADHD, coeficient de inteligență, tulburări de personalitate, atenție, viteză mentală. Se încheie cu un raport scris și o ședință de discuție a rezultatelor.",
                 LongDescriptionHtml =
                     """
-                    <p>Ședințele online funcționează după aceleași principii ca cele din cabinet: durează 50 de minute, au loc la o oră fixă și respectă aceeași confidențialitate. Primești un link de conectare înainte de fiecare întâlnire și nu ai nevoie de nicio aplicație complicată — doar de un dispozitiv cu cameră și microfon.</p>
-                    <p>Pentru ca ședința să fie utilă, ai nevoie de un spațiu în care să nu fii întrerupt și de o conexiune stabilă. Recomand căștile: îmbunătățesc sunetul și adaugă un strat de intimitate dacă în casă mai sunt și alte persoane. Dacă legătura se întrerupe, continuăm telefonic și recuperăm minutele pierdute.</p>
-                    <p>Formatul online este eficient pentru majoritatea temelor de consiliere și psihoterapie individuală. Există însă situații care cer prezență în cabinet — risc suicidar, nevoia unei evaluări complexe sau lucrul cu copii mici — și în aceste cazuri îți voi spune deschis, de la prima discuție.</p>
+                    <p>Evaluarea psihologică este un proces de clarificare: pornim de la întrebarea ta („de ce îmi este atât de greu să mă concentrez?”, „este ADHD sau altceva?”) și adunăm informații din mai multe surse — interviu clinic, probe și chestionare validate, uneori istoricul de dezvoltare și observația directă.</p>
+                    <p>În funcție de întrebare, evaluarea poate viza ADHD, coeficientul de inteligență, tulburările de personalitate, atenția sau viteza mentală. Procesul se desfășoară de obicei în două întâlniri de aproximativ 90 de minute, la care se adaugă timpul de scorare și interpretare.</p>
+                    <p>La final primești un raport scris, în limbaj accesibil, cu concluzii, factori de risc și de protecție și recomandări clare privind pașii următori. Rezultatele le discutăm împreună într-o ședință dedicată, în care ai timp să pui întrebări. Un raport nu este o etichetă: este un instrument de lucru, care poate ghida o intervenție terapeutică sau colaborarea cu un medic psihiatru.</p>
                     <p><strong>Pentru cine este potrivit:</strong></p>
                     <ul>
-                      <li>Persoane din alte orașe sau din diaspora, care vor să lucreze în limba română.</li>
-                      <li>Program de lucru aglomerat sau deplasări frecvente.</li>
-                      <li>Părinți de copii mici, pentru care drumul până la cabinet este dificil.</li>
-                      <li>Situații de mobilitate redusă sau perioade de boală.</li>
-                      <li>Cei care se simt mai confortabil vorbind dintr-un mediu familiar.</li>
-                    </ul>
-                    """,
-                Price = 220m,
-                PriceUnit = "/ ședință 50 min",
-                DurationMinutes = 50,
-                SessionMode = SessionMode.Online,
-                IconName = "Videocam",
-                DisplayOrder = 4,
-                IsActive = true,
-            },
-            new()
-            {
-                Name = "Evaluare psihologică",
-                ShortDescription = "Evaluare structurată prin interviu clinic și teste standardizate, finalizată cu un raport scris și o ședință de discuție a rezultatelor. Utilă când ai nevoie de claritate sau de un document oficial.",
-                LongDescriptionHtml =
-                    """
-                    <p>Evaluarea psihologică este un proces de clarificare: pornim de la întrebarea ta („de ce mă simt așa?”, „ce se întâmplă cu copilul meu la școală?”) și adunăm informații din mai multe surse — interviu clinic, chestionare validate, uneori observație și discuții cu familia.</p>
-                    <p>Procesul se desfășoară de obicei în două întâlniri de aproximativ 90 de minute, la care se adaugă timpul de scorare și interpretare. La final primești un raport scris, în limbaj accesibil, cu concluzii, factori de risc și de protecție și recomandări clare privind pașii următori.</p>
-                    <p>Rezultatele le discutăm împreună într-o ședință dedicată, în care ai timp să pui întrebări. Un raport nu este o etichetă: este un instrument de lucru, care poate ghida o intervenție terapeutică, o adaptare școlară sau colaborarea cu un medic psihiatru.</p>
-                    <p><strong>Pentru cine este potrivit:</strong></p>
-                    <ul>
+                      <li>Adulți care se întreabă dacă dificultățile de atenție au o explicație clinică.</li>
+                      <li>Adolescenți cu dificultăți școlare care par să nu țină de efort sau de motivație.</li>
                       <li>Persoane care vor să înțeleagă mai exact nivelul de anxietate, depresie sau stres.</li>
-                      <li>Părinți care au nevoie de o imagine clară asupra dificultăților școlare ale copilului.</li>
                       <li>Situații care cer un raport psihologic scris pentru o instituție sau pentru un medic.</li>
                       <li>Cei care doresc o a doua opinie înainte de a începe un proces terapeutic.</li>
-                      <li>Persoane care vor un punct de plecare măsurabil, pentru a urmări progresul în timp.</li>
                     </ul>
                     """,
                 Price = 400m,
@@ -318,7 +293,65 @@ public class DbSeeder
                 DurationMinutes = 90,
                 SessionMode = SessionMode.Cabinet,
                 IconName = "Assignment",
+                DisplayOrder = 4,
+                IsActive = true,
+            },
+            new()
+            {
+                Name = "Examinări psihologice pentru copii cu dizabilități",
+                ShortDescription = "Examinare psihologică pentru copii cu dizabilități, necesară pentru comisia de handicap și pentru obținerea certificatului de orientare școlară. Raportul respectă cerințele instituțiilor care îl solicită.",
+                LongDescriptionHtml =
+                    """
+                    <p>Aceste examinări au un scop administrativ clar: produc documentul psihologic pe care comisia de handicap sau comisia de orientare școlară îl cere în dosar. Tocmai de aceea contează ca raportul să fie corect întocmit din prima — un document incomplet întoarce familia de la ghișeu.</p>
+                    <p>Examinarea presupune o întâlnire cu copilul, adaptată nivelului său de funcționare, și o discuție cu părinții despre istoricul de dezvoltare, evaluările anterioare și documentele medicale existente. Durata efectivă depinde de vârsta copilului și de cât de ușor intră în sarcină.</p>
+                    <p>La final primești raportul psihologic în forma cerută de instituție, împreună cu explicațiile necesare: ce înseamnă concret rezultatele și ce recomandări de sprijin educațional decurg din ele.</p>
+                    <p><strong>Pentru cine este potrivit:</strong></p>
+                    <ul>
+                      <li>Familii care depun sau reînnoiesc dosarul la comisia de handicap.</li>
+                      <li>Părinți care au nevoie de certificatul de orientare școlară și profesională.</li>
+                      <li>Copii cu dizabilități care necesită o reevaluare periodică.</li>
+                      <li>Situații în care școala solicită un document psihologic pentru adaptarea curriculară.</li>
+                    </ul>
+                    <p>Te rog să aduci la prima întâlnire documentele medicale și evaluările anterioare, dacă există: scurtează procesul și cresc acuratețea raportului.</p>
+                    """,
+                Price = null,
+                PriceUnit = null,
+                DurationMinutes = 90,
+                SessionMode = SessionMode.Cabinet,
+                IconName = "FactCheck",
                 DisplayOrder = 5,
+                IsActive = true,
+            },
+            new()
+            {
+                Name = "Avize psihologice",
+                ShortDescription = "Aviz psihologic eliberat în urma unei evaluări, pentru voluntariat ISU/SMURD, încadrare sau concurs MAI/MAPN/ANI/ANP, permis tir sportiv, atestat și angajare agenți de pază și ordine, polițist comunitar.",
+                LongDescriptionHtml =
+                    """
+                    <p>Avizul psihologic este un document eliberat în urma unei evaluări, nu o formalitate semnată la cerere. Examinarea verifică, prin probe standardizate, dacă profilul psihologic corespunde cerințelor postului sau activității pentru care se solicită avizul.</p>
+                    <p>Emit avize psihologice pentru:</p>
+                    <ul>
+                      <li>Voluntariat ISU/SMURD</li>
+                      <li>Încadrare sau concurs MAI / MAPN / ANI / ANP</li>
+                      <li>Permis tir sportiv</li>
+                      <li>Atestat pentru agenți de pază și ordine</li>
+                      <li>Angajare agenți de pază</li>
+                      <li>Polițist comunitar</li>
+                    </ul>
+                    <p>Evaluarea se desfășoară într-o singură întâlnire în cabinet și cuprinde probe de atenție, probe cognitive și chestionare de personalitate, alături de un interviu scurt. Avizul se eliberează după scorarea și interpretarea rezultatelor.</p>
+                    <p><strong>Ce să aduci cu tine:</strong></p>
+                    <ul>
+                      <li>Actul de identitate.</li>
+                      <li>Adresa sau solicitarea instituției, dacă ai primit una, ca avizul să fie emis în forma cerută.</li>
+                      <li>Ochelarii sau lentilele de contact, dacă le folosești — unele probe sunt vizuale.</li>
+                    </ul>
+                    """,
+                Price = null,
+                PriceUnit = null,
+                DurationMinutes = 60,
+                SessionMode = SessionMode.Cabinet,
+                IconName = "Verified",
+                DisplayOrder = 6,
                 IsActive = true,
             },
         };

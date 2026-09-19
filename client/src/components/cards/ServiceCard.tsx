@@ -3,8 +3,10 @@ import { Box, Button, Card, CardActions, CardContent, Chip, Stack, Typography } 
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 import AssignmentIcon from '@mui/icons-material/Assignment'
 import ChildCareIcon from '@mui/icons-material/ChildCare'
+import FactCheckIcon from '@mui/icons-material/FactCheck'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import GroupsIcon from '@mui/icons-material/Groups'
+import VerifiedIcon from '@mui/icons-material/Verified'
 import PsychologyIcon from '@mui/icons-material/Psychology'
 import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded'
 import SelfImprovementIcon from '@mui/icons-material/SelfImprovement'
@@ -30,6 +32,8 @@ const iconMap: Record<string, typeof PsychologyIcon> = {
   Assignment: AssignmentIcon,
   SelfImprovement: SelfImprovementIcon,
   Groups: GroupsIcon,
+  FactCheck: FactCheckIcon,
+  Verified: VerifiedIcon,
 }
 
 const clampLines = (lines: number) =>

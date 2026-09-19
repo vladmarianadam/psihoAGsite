@@ -140,7 +140,7 @@ export default function BlogPage() {
 
   const seoDescription = categoryName
     ? `Articole din categoria ${categoryName} — resurse de psihologie scrise de Adina Gghita.`
-    : 'Articole de psihologie despre anxietate, depresie, relații de cuplu, copii și adolescenți și dezvoltare personală.'
+    : 'Articole de psihologie despre anxietate, depresie, copii și adolescenți, parenting și dezvoltare personală.'
 
   // Canonic fără parametri de query; paginile de căutare și cele de la a doua încolo
   // primesc noindex, ca să nu concureze cu /blog și cu articolele în sine.

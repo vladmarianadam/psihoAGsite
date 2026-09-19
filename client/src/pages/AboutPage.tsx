@@ -27,43 +27,47 @@ import VolunteerActivismOutlinedIcon from '@mui/icons-material/VolunteerActivism
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined'
 
 import CtaBanner from '../components/common/CtaBanner'
+import PhotoImage from '../components/common/PhotoImage'
 import PlaceholderImage from '../components/common/PlaceholderImage'
+import portretAdina from '../assets/adina-gghita-portret.jpg'
 import SectionHeading from '../components/common/SectionHeading'
 import Seo from '../components/common/Seo'
 import { site } from '../config/site'
-import { palette } from '../theme'
 
 /**
- * Formările și certificările sunt formulate generic, ca structură de conținut.
- * TODO (plan §11): înlocuiește fiecare rând cu titlul real al formării, institutul
- * care a eliberat diploma și anul, după ce clientul trimite documentele. Aceeași
- * observație pentru codul de atestat COPSI din `src/config/site.ts`.
+ * Atestatele și studiile reale, conform documentelor furnizate de client.
+ * TODO (plan §11): completează anii de absolvire și codul de atestat COPSI din
+ * `src/config/site.ts` când clientul trimite copiile diplomelor.
  * (Intenționat fără Alert vizibil în pagină — nota rămâne doar în cod.)
  */
 const trainings: ReadonlyArray<{ title: string; detail: string }> = [
   {
-    title: 'Formare în psihoterapie cognitiv-comportamentală',
-    detail: 'Program de formare de lungă durată, cu practică supervizată.',
-  },
-  {
-    title: 'Atestat de liberă practică în psihologie clinică',
+    title: 'Atestat în psihologie clinică',
     detail: 'Eliberat de Colegiul Psihologilor din România.',
   },
   {
-    title: 'Formare în consiliere psihologică',
-    detail: 'Specializare complementară, orientată pe intervenții de scurtă durată.',
+    title: 'Atestat în psihoterapie cognitiv-comportamentală individuală și de grup',
+    detail: 'Eliberat de Colegiul Psihologilor din România.',
   },
   {
-    title: 'Formare în terapia traumei și a reacțiilor de stres',
-    detail: 'Modul de specializare dedicat evenimentelor de viață dificile.',
+    title: 'Atestat în psihologie aplicată în domeniul securității naționale',
+    detail: 'Eliberat de Colegiul Psihologilor din România.',
   },
   {
-    title: 'Formare în consiliere pentru cuplu și familie',
-    detail: 'Instrumente de lucru pentru dificultăți de relaționare și comunicare.',
+    title: 'Licență în Psihologie',
+    detail:
+      'Facultatea de Psihologie și Științele Educației, Universitatea din București.',
   },
   {
-    title: 'Supervizare profesională și formare continuă',
-    detail: 'Participare constantă la supervizare, conferințe și ateliere de specialitate.',
+    title:
+      'Master în Psihologia Sănătății — Cercetare Clinică și Optimizare Comportamentală',
+    detail:
+      'Facultatea de Psihologie și Științele Educației, Universitatea din București.',
+  },
+  {
+    title: 'Master în Psihologie Aplicată în Domeniul Securității Naționale',
+    detail:
+      'Facultatea de Psihologie și Științele Educației, Universitatea din București.',
   },
 ]
 
@@ -82,9 +86,9 @@ const approaches: ReadonlyArray<{ icon: ReactNode; title: string; description: s
   },
   {
     icon: <AutoAwesomeOutlinedIcon />,
-    title: 'Integrativă',
+    title: 'Individual și în grup',
     description:
-      'Nicio metodă nu se potrivește tuturor. Adaptez intervenția la ceea ce îți este de folos: elemente de mindfulness, lucru cu emoțiile, tehnici de reglare a anxietății sau explorarea poveștii tale de viață, în funcție de obiectivele pe care le stabilim.',
+      'Sunt atestată atât pentru psihoterapie individuală, cât și pentru lucrul în grup. Unele teme — anxietatea socială, stima de sine, abilitățile de relaționare — avansează mai repede într-un grup mic, unde vezi că nu ești singurul care trece prin asta. Alegem împreună formatul care ți se potrivește.',
   },
 ]
 
@@ -125,17 +129,17 @@ export default function AboutPage() {
       {/* ---------------------------------------------------- Hero scurt ---- */}
       <Box
         component="section"
-        sx={{
+        sx={({ palette: { brand } }) => ({
           pt: { xs: 6, md: 9 },
           pb: { xs: 5, md: 7 },
           backgroundColor: 'background.paper',
           borderBottom: '1px solid',
           borderColor: 'divider',
           backgroundImage: [
-            `radial-gradient(80% 120% at 0% 0%, ${palette.secondary}26 0%, transparent 60%)`,
-            `radial-gradient(70% 110% at 100% 10%, ${palette.primaryLight}1F 0%, transparent 62%)`,
+            `radial-gradient(80% 120% at 0% 0%, ${brand.secondary}26 0%, transparent 60%)`,
+            `radial-gradient(70% 110% at 100% 10%, ${brand.primaryLight}1F 0%, transparent 62%)`,
           ].join(', '),
-        }}
+        })}
       >
         <Container maxWidth="lg">
           <Grid container spacing={{ xs: 4, md: 6 }} alignItems="center">
@@ -159,8 +163,8 @@ export default function AboutPage() {
               </Typography>
 
               <Typography variant="subtitle1" component="p" sx={{ maxWidth: '58ch', mb: 3 }}>
-                {site.role}. Însoțesc adulți, cupluri, copii și adolescenți în perioade în care
-                lucrurile par prea grele pentru a fi duse singuri — {site.tagline.toLowerCase()}.
+                {site.role}. Însoțesc copii, adolescenți și adulți în perioade în care lucrurile
+                par prea grele pentru a fi duse singuri — {site.tagline.toLowerCase()}.
               </Typography>
 
               <Stack direction="row" useFlexGap flexWrap="wrap" sx={{ gap: 1.25 }}>
@@ -179,10 +183,9 @@ export default function AboutPage() {
             </Grid>
 
             <Grid size={{ xs: 12, md: 5 }}>
-              {/* Portretul real va înlocui placeholderul (plan §11). */}
-              <PlaceholderImage
-                icon={<PsychologyOutlinedIcon />}
-                label={`Portret ${site.shortName} — fotografie în pregătire`}
+              <PhotoImage
+                src={portretAdina}
+                alt={`${site.shortName}, ${site.role.toLowerCase()}`}
                 ratio={4 / 5}
                 rounded={2}
               />
@@ -201,12 +204,21 @@ export default function AboutPage() {
           />
 
           <Typography sx={paragraphSx}>
-            Mă numesc Adina Gghita și lucrez ca psiholog clinician și psihoterapeut. Am ajuns la
-            această profesie pornind de la o întrebare care mă însoțește de mult: cum reușesc
-            oamenii să traverseze perioade grele și ce anume îi ajută, concret, să se regăsească.
-            Răspunsul pe care l-am găsit în practică este mai simplu decât mă așteptam — contează
-            enorm să existe un loc în care poți vorbi fără să te cenzurezi și cineva care rămâne
-            alături de tine până se limpezesc lucrurile.
+            Mă numesc Adina Gghita și sunt psiholog atestat de Colegiul Psihologilor din România în
+            psihologie clinică, psihoterapie cognitiv-comportamentală individuală și de grup și
+            psihologie aplicată în domeniul securității naționale. Am ajuns la această profesie
+            pornind de la o întrebare care mă însoțește de mult: cum reușesc oamenii să traverseze
+            perioade grele și ce anume îi ajută, concret, să se regăsească. Răspunsul pe care l-am
+            găsit în practică este mai simplu decât mă așteptam — contează enorm să existe un loc
+            în care poți vorbi fără să te cenzurezi și cineva care rămâne alături de tine până se
+            limpezesc lucrurile.
+          </Typography>
+
+          <Typography sx={paragraphSx}>
+            Am finalizat studiile de licență în Psihologie și masterul în Psihologia Sănătății —
+            Cercetare Clinică și Optimizare Comportamentală, precum și masterul în Psihologie
+            Aplicată în Domeniul Securității Naționale, la Facultatea de Psihologie și Științele
+            Educației din cadrul Universității din București.
           </Typography>
 
           <Typography sx={paragraphSx}>
@@ -221,9 +233,19 @@ export default function AboutPage() {
           <Typography sx={paragraphSx}>
             Lucrez cu adulți care trec prin anxietate, episoade depresive, epuizare profesională,
             pierderi sau despărțiri, cu persoane care își pun întrebări despre stima de sine și
-            despre relațiile lor, cu cupluri care simt că nu se mai aud și cu copii și adolescenți
-            aflați în etape de tranziție. În toate aceste situații pornim de la ceea ce te aduce
-            aici și stabilim obiective clare, pe care le revedem periodic, ca să știi unde te afli.
+            despre relațiile lor, cu copii și adolescenți care au dificultăți comportamentale sau
+            tulburări de neurodezvoltare și cu părinți care caută sprijin în relația cu propriul
+            copil. În toate aceste situații pornim de la ceea ce te aduce aici și stabilim
+            obiective clare, pe care le revedem periodic, ca să știi unde te afli.
+          </Typography>
+
+          <Typography sx={paragraphSx}>
+            Pe lângă psihoterapie, realizez evaluări psihologice pentru adolescenți și adulți
+            (ADHD, coeficient de inteligență, tulburări de personalitate, atenție, viteză mentală),
+            examinări psihologice pentru copii cu dizabilități — necesare pentru comisia de
+            handicap și pentru certificatul de orientare școlară — și emit avize psihologice pentru
+            voluntariat ISU/SMURD, încadrare sau concurs MAI/MAPN/ANI/ANP, permis tir sportiv,
+            atestat pentru agenți de pază și ordine, angajare agenți de pază și polițist comunitar.
           </Typography>
 
           <Typography sx={paragraphSx}>

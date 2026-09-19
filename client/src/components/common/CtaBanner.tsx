@@ -2,7 +2,6 @@ import { Link as RouterLink } from 'react-router-dom'
 import { Box, Button, Stack, Typography } from '@mui/material'
 import PhoneRoundedIcon from '@mui/icons-material/PhoneRounded'
 
-import { palette } from '../../theme'
 import { phoneHref, site } from '../../config/site'
 
 interface CtaBannerProps {
@@ -22,20 +21,20 @@ export default function CtaBanner({
 }: CtaBannerProps) {
   return (
     <Box
-      sx={{
+      sx={({ palette: { brand } }) => ({
         position: 'relative',
         overflow: 'hidden',
         borderRadius: 2,
         px: { xs: 3, sm: 5, md: 7 },
         py: { xs: 5, md: 7 },
         color: 'common.white',
-        // Gradient decorativ din paleta temei.
-        backgroundColor: palette.primary,
+        // Gradient decorativ din paleta temei active.
+        backgroundColor: brand.primary,
         backgroundImage: [
-          `radial-gradient(90% 130% at 100% 0%, ${palette.secondaryDark}59 0%, transparent 58%)`,
-          `linear-gradient(135deg, ${palette.primary} 0%, ${palette.primaryDark} 100%)`,
+          `radial-gradient(90% 130% at 100% 0%, ${brand.secondaryDark}59 0%, transparent 58%)`,
+          `linear-gradient(135deg, ${brand.primary} 0%, ${brand.primaryDark} 100%)`,
         ].join(', '),
-      }}
+      })}
     >
       <Box sx={{ position: 'relative', maxWidth: '62ch' }}>
         <Typography variant="h3" component="h2" sx={{ color: 'inherit' }}>

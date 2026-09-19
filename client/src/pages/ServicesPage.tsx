@@ -76,7 +76,7 @@ export default function ServicesPage() {
     <>
       <Seo
         title="Servicii"
-        description="Psihoterapie individuală, terapie de cuplu, consiliere pentru copii și adolescenți și ședințe online. Vezi durata, prețul și modul de desfășurare pentru fiecare serviciu."
+        description="Psihoterapie cognitiv-comportamentală, intervenție pentru copii și adolescenți, consiliere pentru părinți, evaluări și avize psihologice. Vezi durata, prețul și modul de desfășurare pentru fiecare serviciu."
         path="/servicii"
         jsonLd={jsonLd}
       />

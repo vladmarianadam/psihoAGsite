@@ -11,19 +11,19 @@ export const site = {
   role: 'Psiholog clinician & psihoterapeut',
   tagline: 'Ședințe în cabinet sau online',
   description:
-    'Cabinet de psihologie — psihoterapie individuală, terapie de cuplu și consiliere pentru copii și adolescenți, în cabinet sau online.',
+    'Cabinet de psihologie — psihoterapie cognitiv-comportamentală, evaluări psihologice și avize psihologice, în cabinet sau online.',
   url: (env.VITE_SITE_URL as string | undefined) ?? 'https://www.adinagghita.ro',
   phone: (env.VITE_PHONE as string | undefined) ?? '+40 700 000 000',
   whatsapp: (env.VITE_WHATSAPP as string | undefined) ?? '40700000000',
   email: (env.VITE_EMAIL as string | undefined) ?? 'contact@adinagghita.ro',
   address: {
-    street: 'Str. Exemplu nr. 1',
-    city: 'Brașov',
+    street: 'Str. Sapienței, Sector 5',
+    city: 'București',
     country: 'România',
-    mapsQuery: 'Brasov, Romania',
+    mapsQuery: 'Strada Sapienței, Sector 5, București, România',
   },
-  /** Cod de atestat COPSI — de completat cu valoarea reală (plan §11). */
-  copsi: 'Membru COPSI — cod atestat: (de completat)',
+  /** Numărul de la stradă și codul de atestat COPSI rămân de completat (plan §11). */
+  copsi: 'Psiholog atestat de Colegiul Psihologilor din România',
   schedule: [
     { day: 'Luni – Joi', hours: '10:00 – 20:00' },
     { day: 'Vineri', hours: '10:00 – 17:00' },

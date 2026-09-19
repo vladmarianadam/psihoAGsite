@@ -16,6 +16,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import PhoneIcon from '@mui/icons-material/Phone'
 
 import { phoneHref, site } from '../../config/site'
+import ThemeToggle from '../common/ThemeToggle'
 import MobileDrawer from './MobileDrawer'
 
 /** Navigația publică. Panoul de management nu apare deliberat aici (plan §7). */
@@ -121,6 +122,7 @@ export default function Navbar() {
               spacing={1.5}
               sx={{ display: { xs: 'none', md: 'flex' }, ml: 1.5 }}
             >
+              <ThemeToggle />
               <Button
                 href={phoneHref}
                 startIcon={<PhoneIcon fontSize="small" />}
@@ -140,6 +142,7 @@ export default function Navbar() {
               spacing={0.5}
               sx={{ display: { xs: 'flex', md: 'none' } }}
             >
+              <ThemeToggle size="medium" />
               <IconButton
                 href={phoneHref}
                 aria-label={`Sună la ${site.phone}`}

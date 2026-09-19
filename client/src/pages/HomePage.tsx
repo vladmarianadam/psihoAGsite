@@ -32,20 +32,19 @@ import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import PhoneRoundedIcon from '@mui/icons-material/PhoneRounded'
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
-import PsychologyOutlinedIcon from '@mui/icons-material/PsychologyOutlined'
 import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded'
-import SelfImprovementOutlinedIcon from '@mui/icons-material/SelfImprovementOutlined'
 import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined'
 
 import Seo from '../components/common/Seo'
 import SectionHeading from '../components/common/SectionHeading'
-import PlaceholderImage from '../components/common/PlaceholderImage'
+import PhotoImage from '../components/common/PhotoImage'
+import portretAdina from '../assets/adina-gghita-portret.jpg'
+import portretAdinaAlbNegru from '../assets/adina-gghita-portret-alb-negru.jpg'
 import CtaBanner from '../components/common/CtaBanner'
 import ServiceCard from '../components/cards/ServiceCard'
 import ArticleCard from '../components/cards/ArticleCard'
 import TestimonialCard from '../components/cards/TestimonialCard'
 import { formatPriceRo } from '../components/common/formatters'
-import { palette } from '../theme'
 import { mailHref, phoneHref, site } from '../config/site'
 import { getErrorMessage } from '../api/client'
 import { getServices } from '../api/services'
@@ -67,8 +66,8 @@ const competencies: string[] = [
   'Anxietate generalizată și atacuri de panică',
   'Stări depresive și lipsă de energie',
   'Stres profesional și epuizare',
-  'Relații de cuplu și dificultăți de comunicare',
-  'Doliu, separare și alte pierderi',
+  'ADHD, atenție și viteză mentală — evaluare și intervenție',
+  'Dificultăți comportamentale și tulburări de neurodezvoltare',
   'Stimă de sine și critică interioară',
 ]
 
@@ -167,11 +166,16 @@ interface SectionProps {
 }
 
 function Section({ children, tone = 'default', id }: SectionProps) {
-  const background =
-    tone === 'paper' ? 'background.paper' : tone === 'tint' ? `${palette.secondary}14` : 'transparent'
-
   return (
-    <Box component="section" id={id} sx={{ py: { xs: 7, md: 11 }, bgcolor: background }}>
+    <Box
+      component="section"
+      id={id}
+      sx={({ palette: { brand } }) => ({
+        py: { xs: 7, md: 11 },
+        bgcolor:
+          tone === 'paper' ? 'background.paper' : tone === 'tint' ? `${brand.secondary}14` : 'transparent',
+      })}
+    >
       <Container maxWidth="lg">{children}</Container>
     </Box>
   )
@@ -202,17 +206,17 @@ function HeroSection() {
   return (
     <Box
       component="section"
-      sx={{
+      sx={({ palette: { brand } }) => ({
         position: 'relative',
         overflow: 'hidden',
         pt: { xs: 6, md: 10 },
         pb: { xs: 7, md: 12 },
-        // Gradient decorativ din paleta temei (fără imagini externe).
+        // Gradient decorativ din paleta temei active (fără imagini externe).
         backgroundImage: [
-          `radial-gradient(90% 110% at 6% 0%, ${palette.secondary}2E 0%, transparent 58%)`,
-          `radial-gradient(80% 100% at 100% 24%, ${palette.primaryLight}26 0%, transparent 60%)`,
+          `radial-gradient(90% 110% at 6% 0%, ${brand.secondary}2E 0%, transparent 58%)`,
+          `radial-gradient(80% 100% at 100% 24%, ${brand.primaryLight}26 0%, transparent 60%)`,
         ].join(', '),
-      }}
+      })}
     >
       <Container maxWidth="lg">
         <Grid container spacing={{ xs: 5, md: 7 }} alignItems="center">
@@ -270,10 +274,10 @@ function HeroSection() {
                 boxShadow: '0 24px 60px rgba(44, 54, 57, 0.10)',
               }}
             >
-              <PlaceholderImage
+              <PhotoImage
+                src={portretAdina}
+                alt={`${site.shortName}, ${site.role.toLowerCase()}`}
                 ratio={4 / 5}
-                icon={<SelfImprovementOutlinedIcon />}
-                label="Atmosfera cabinetului — fotografiile sunt în curs de pregătire"
               />
             </Box>
           </Grid>
@@ -370,10 +374,10 @@ function AboutSection() {
               borderColor: 'divider',
             }}
           >
-            <PlaceholderImage
+            <PhotoImage
+              src={portretAdinaAlbNegru}
+              alt={`Portret ${site.shortName}`}
               ratio={4 / 5}
-              icon={<PsychologyOutlinedIcon />}
-              label={`Portret ${site.shortName} — fotografia este în curs de pregătire`}
             />
           </Box>
         </Grid>
@@ -383,15 +387,16 @@ function AboutSection() {
 
           <Stack spacing={2}>
             <Typography sx={{ color: 'text.secondary' }}>
-              Lucrez de peste zece ani cu adulți, cupluri și adolescenți care trec prin anxietate,
-              stări depresive, epuizare sau momente de cotitură în viață. Am ales această profesie
-              pentru convingerea că nimeni nu ar trebui să ducă singur ce e prea greu de dus.
+              Sunt psiholog atestat de Colegiul Psihologilor din România în psihologie clinică,
+              psihoterapie cognitiv-comportamentală individuală și de grup și psihologie aplicată
+              în domeniul securității naționale. Lucrez cu adolescenți și adulți care trec prin
+              anxietate, stări depresive, epuizare sau momente de cotitură în viață.
             </Typography>
             <Typography sx={{ color: 'text.secondary' }}>
-              Abordarea mea este integrativă, cu rădăcini în terapia cognitiv-comportamentală, dar
-              adaptată fiecărei persoane. Nu vin cu rețete: pornim de la ce te aduce în cabinet,
-              stabilim împreună obiective realiste și verificăm periodic dacă mergem în direcția
-              bună pentru tine.
+              Abordarea mea este cognitiv-comportamentală, adaptată fiecărei persoane. Nu vin cu
+              rețete: pornim de la ce te aduce în cabinet, stabilim împreună obiective realiste și
+              verificăm periodic dacă mergem în direcția bună pentru tine. Pe lângă psihoterapie,
+              realizez evaluări psihologice și emit avize psihologice.
             </Typography>
             <Typography sx={{ color: 'text.secondary' }}>
               Ședințele au loc într-un cadru clar și confidențial — durată fixă, ritm stabilit de

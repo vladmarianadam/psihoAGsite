@@ -6,7 +6,6 @@ import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded'
 import SearchOffRoundedIcon from '@mui/icons-material/SearchOffRounded'
 
 import Seo from '../components/common/Seo'
-import { palette } from '../theme'
 
 export default function NotFoundPage() {
   return (
@@ -15,13 +14,13 @@ export default function NotFoundPage() {
 
       <Box
         component="section"
-        sx={{
+        sx={({ palette: { brand } }) => ({
           py: { xs: 8, md: 12 },
           textAlign: 'center',
           backgroundImage: [
-            `radial-gradient(70% 90% at 50% 0%, ${palette.secondary}1F 0%, transparent 65%)`,
+            `radial-gradient(70% 90% at 50% 0%, ${brand.secondary}1F 0%, transparent 65%)`,
           ].join(', '),
-        }}
+        })}
       >
         <Container maxWidth="sm">
           <Box

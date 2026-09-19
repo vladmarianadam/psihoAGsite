@@ -89,7 +89,7 @@ export default function Footer() {
               {site.name}
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2.5 }}>
-              Sprijin psihologic pentru adulți, cupluri, copii și adolescenți — ședințe în cabinet
+              Sprijin psihologic pentru copii, adolescenți și adulți — ședințe în cabinet
               sau online, într-un cadru confidențial și lipsit de grabă.
             </Typography>
             <Chip

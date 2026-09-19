@@ -133,9 +133,16 @@ De reținut la deploy:
 
 ## Ce lipsește (depinde de client)
 
-Conform plan §11: numele complet corect și titulatura, numărul de atestat COPSI, fotografiile
-(portret + cabinet), textul „Despre mine", lista reală de servicii cu prețuri, adresa/telefonul/
-programul, linkurile de social media, logo-ul și testimonialele cu acord de publicare.
+Primite și integrate: textul „Despre mine" și atestatele (`resources/despre-mine-psiholog.md`),
+portretul (`client/src/assets/adina-gghita-portret*.jpg`), lista reală de servicii și localitatea
+cabinetului (Str. Sapienței, Sector 5, București).
+
+Încă de completat, conform plan §11: numărul de la stradă, numărul de atestat COPSI, telefonul și
+adresa de e-mail reale, prețurile pentru cele patru servicii afișate momentan fără preț
+(intervenție copii/adolescenți, consiliere părinți, examinări copii cu dizabilități, avize
+psihologice), fotografiile cabinetului, linkurile de social media, logo-ul și testimonialele cu
+acord de publicare.
 
 Până atunci: datele de contact sunt centralizate în `client/src/config/site.ts` (citite din `.env`),
-iar în locul fotografiilor se afișează substituenți construiți din paleta temei.
+iar în locul fotografiilor de cabinet se afișează substituenți construiți din paleta temei
+(`PlaceholderImage`). Fotografiile reale se adaugă cu `PhotoImage`, care primește aceleași props.

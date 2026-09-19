@@ -1,9 +1,20 @@
+/* Variabilele CSS oglindesc paletele din theme.ts; tema activă e dată de <html data-theme>. */
 :root {
   --psiho-primary: #4a6d7c;
   --psiho-secondary: #c9a882;
+  --psiho-secondary-tint: rgba(201, 168, 130, 0.09);
   --psiho-bg: #faf8f5;
   --psiho-text: #2c3639;
   --psiho-border: #e6e0d8;
+}
+
+:root[data-theme='seaside'] {
+  --psiho-primary: #3f5a73;
+  --psiho-secondary: #e8a26a;
+  --psiho-secondary-tint: rgba(232, 162, 106, 0.12);
+  --psiho-bg: #f8f2e9;
+  --psiho-text: #22303b;
+  --psiho-border: #e4dacc;
 }
 
 * {
@@ -67,7 +78,7 @@ img {
   margin: 1.75rem 0;
   padding: 1rem 1.5rem;
   border-left: 3px solid var(--psiho-secondary);
-  background: rgba(201, 168, 130, 0.09);
+  background: var(--psiho-secondary-tint);
   border-radius: 0 12px 12px 0;
   font-style: italic;
 }

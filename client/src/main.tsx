@@ -2,21 +2,21 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
-import { CssBaseline, ThemeProvider } from '@mui/material'
+import { CssBaseline } from '@mui/material'
 
 import App from './App'
-import theme from './theme'
+import { ThemeModeProvider } from './themeMode'
 import './index.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HelmetProvider>
-      <ThemeProvider theme={theme}>
+      <ThemeModeProvider>
         <CssBaseline />
         <BrowserRouter>
           <App />
         </BrowserRouter>
-      </ThemeProvider>
+      </ThemeModeProvider>
     </HelmetProvider>
   </StrictMode>,
 )
