@@ -10,6 +10,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    // `0.0.0.0` (nu `true`) leagă explicit un socket IPv4 pe toate interfețele, ca
+    // site-ul să poată fi deschis de pe telefon din aceeași rețea Wi-Fi
+    // (ex. http://192.168.1.129:5173). Cu `host: true`, Node ascultă doar pe `::`,
+    // iar pe Windows conexiunile IPv4 din exterior nu ajung la acel socket.
+    // API-ul rămâne pe localhost: apelurile /api trec prin proxy-ul de mai jos,
+    // deci portul 5180 nu trebuie expus în rețea.
+    host: '0.0.0.0',
     allowedHosts: ['.ngrok-free.dev', '.ngrok.io'],
     proxy: {
       '/api': { target: API_TARGET, changeOrigin: true, secure: false },

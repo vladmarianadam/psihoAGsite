@@ -1,0 +1,47 @@
+# Tot ce nu trebuie trimis în contextul de build: ține imaginea mică și evită ca artefacte
+# locale (bin/obj de pe Windows, node_modules, baza de date de dev) să ajungă în imagine.
+
+.git
+.gitignore
+.vs
+.vscode
+.idea
+.config
+
+# .NET
+**/bin/
+**/obj/
+publish/
+*.user
+*.suo
+
+# Node / client
+**/node_modules/
+client/dist/
+
+# Build-ul clientului copiat local în wwwroot — în imagine se regenerează din sursă.
+src/PsihoAdinaGghita.Api/wwwroot/assets/
+src/PsihoAdinaGghita.Api/wwwroot/index.html
+src/PsihoAdinaGghita.Api/wwwroot/favicon.svg
+
+# Încărcările și baza de date locală stau pe volume, nu în imagine.
+src/PsihoAdinaGghita.Api/wwwroot/uploads/
+*.db
+*.db-shm
+*.db-wal
+
+# Secrete / configurații locale
+.env
+.env.*
+!client/.env.example
+appsettings.local.json
+**/appsettings.Development.json
+
+# Teste, unelte și documentație — nu sunt necesare pentru imaginea de producție.
+tests/
+graphify-out/
+resources/
+*.md
+Dockerfile
+.dockerignore
+docker-compose*.yml
