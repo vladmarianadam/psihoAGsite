@@ -77,12 +77,21 @@ namespace PsihoAdinaGghita.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ConfirmedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("EndAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FullName")
@@ -92,6 +101,15 @@ namespace PsihoAdinaGghita.Infrastructure.Persistence.Migrations
 
                     b.Property<bool>("GdprConsent")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("GoogleEventId")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GoogleSyncState")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsHandled")
                         .HasColumnType("INTEGER");
@@ -118,8 +136,20 @@ namespace PsihoAdinaGghita.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RejectReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("ServiceId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("StartAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
@@ -127,6 +157,10 @@ namespace PsihoAdinaGghita.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ServiceId");
+
+                    b.HasIndex("StartAt")
+                        .IsUnique()
+                        .HasFilter("\"Status\" IN ('Pending','Confirmed')");
 
                     b.HasIndex("IsHandled", "CreatedAt");
 
@@ -207,6 +241,112 @@ namespace PsihoAdinaGghita.Infrastructure.Persistence.Migrations
                     b.HasIndex("Status", "PublishedAt");
 
                     b.ToTable("Articles");
+                });
+
+            modelBuilder.Entity("PsihoAdinaGghita.Domain.Entities.AvailabilityException", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeOnly?>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Date");
+
+                    b.ToTable("AvailabilityExceptions");
+                });
+
+            modelBuilder.Entity("PsihoAdinaGghita.Domain.Entities.AvailabilityRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DayOfWeek");
+
+                    b.ToTable("AvailabilityRules");
+                });
+
+            modelBuilder.Entity("PsihoAdinaGghita.Domain.Entities.BookingSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BufferMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("HorizonDays")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MaxPendingPerEmail")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MinNoticeHours")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SlotStepMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TimeZone")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("UseGoogleFreeBusy")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BookingSettings");
                 });
 
             modelBuilder.Entity("PsihoAdinaGghita.Domain.Entities.Category", b =>

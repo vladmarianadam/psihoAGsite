@@ -179,7 +179,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
 
         <Button
           component={RouterLink}
-          to="/contact"
+          to="/programare"
           onClick={onClose}
           variant="contained"
           fullWidth

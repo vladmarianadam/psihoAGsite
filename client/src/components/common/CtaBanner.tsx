@@ -16,7 +16,7 @@ export default function CtaBanner({
   title = 'Primul pas poate fi o simplă conversație',
   description = 'Scrie-mi câteva rânduri despre ceea ce te aduce aici. Îți răspund în cel mai scurt timp și stabilim împreună un moment potrivit pentru prima ședință, în cabinet sau online.',
   primaryLabel = 'Programează o ședință',
-  primaryTo = '/contact',
+  primaryTo = '/programare',
   showPhone = true,
 }: CtaBannerProps) {
   return (

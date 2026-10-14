@@ -283,7 +283,7 @@ function HeroSection() {
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4.5 }}>
               <Button
                 component={RouterLink}
-                to="/contact"
+                to="/programare"
                 size="large"
                 variant="contained"
                 color={onImage ? 'secondary' : 'primary'}
@@ -680,7 +680,7 @@ function PackagesSection({ services }: PackagesSectionProps) {
                   <Box sx={{ mt: 'auto', pt: 3 }}>
                     <Button
                       component={RouterLink}
-                      to="/contact"
+                      to="/programare"
                       fullWidth
                       variant={option.highlighted ? 'contained' : 'outlined'}
                     >

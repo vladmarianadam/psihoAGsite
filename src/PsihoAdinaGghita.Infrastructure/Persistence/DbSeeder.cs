@@ -43,6 +43,7 @@ public class DbSeeder
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
         var adminCreated = await SeedAdminUserAsync(cancellationToken);
+        await SeedBookingAsync(cancellationToken);
 
         if (!_options.SeedDemoContent)
         {
@@ -102,6 +103,41 @@ public class DbSeeder
         }
 
         return true;
+    }
+
+    // ---- Programări online -------------------------------------------------
+
+    /// <summary>
+    /// Rulează mereu (nu doar cu SeedDemoContent): rândul unic de setări trebuie să existe.
+    /// La prima creare, programul săptămânal pornește din orarul cabinetului.
+    /// </summary>
+    private async Task SeedBookingAsync(CancellationToken cancellationToken)
+    {
+        if (await _db.BookingSettings.AnyAsync(cancellationToken))
+            return;
+
+        _db.BookingSettings.Add(new BookingSettings());
+
+        if (!await _db.AvailabilityRules.AnyAsync(cancellationToken))
+        {
+            // Luni–Joi 10:00–20:00, Vineri 10:00–17:00.
+            var weekdays = new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday };
+            _db.AvailabilityRules.AddRange(weekdays.Select(day => new AvailabilityRule
+            {
+                DayOfWeek = day,
+                StartTime = new TimeOnly(10, 0),
+                EndTime = new TimeOnly(20, 0),
+            }));
+            _db.AvailabilityRules.Add(new AvailabilityRule
+            {
+                DayOfWeek = DayOfWeek.Friday,
+                StartTime = new TimeOnly(10, 0),
+                EndTime = new TimeOnly(17, 0),
+            });
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation("Setările programărilor online au fost create.");
     }
 
     /// <summary>Parolă temporară puternică (20 de caractere) generată criptografic.</summary>

@@ -18,6 +18,9 @@ public interface IAppDbContext
     DbSet<FaqItem> FaqItems { get; }
     DbSet<MediaAsset> MediaAssets { get; }
     DbSet<AdminUser> AdminUsers { get; }
+    DbSet<AvailabilityRule> AvailabilityRules { get; }
+    DbSet<AvailabilityException> AvailabilityExceptions { get; }
+    DbSet<BookingSettings> BookingSettings { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

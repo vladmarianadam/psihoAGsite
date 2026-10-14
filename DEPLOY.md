@@ -42,12 +42,25 @@ Variabilele reale (`__`, dublu underscore, este separatorul de secțiune în .NE
 | `Jwt__SigningKey` | șir aleator de **minimum 32 de bytes** | **obligatoriu** — aplicația refuză să pornească în producție fără el |
 | `AdminSeed__Password` | parola primului cont de administrator | se folosește o singură dată, la prima pornire |
 | `AdminSeed__Username` | `admin` | opțional |
-| `AdminSeed__SeedDemoContent` | `false` | altfel se inserează articole și servicii demonstrative |
+| `AdminSeed__SeedDemoContent` | `true` la primul deploy | vezi secțiunea „Conținutul din seed” — cu `false`, site-ul pornește **fără niciun serviciu** |
 | `Cors__AllowedOrigins` | domeniul real, ex. `https://www.adinagghita.ro` | poate rămâne gol când SPA-ul e servit din aceeași imagine |
 | `Site__PublicUrl` | `https://www.adinagghita.ro` | folosit în `sitemap.xml` și în linkurile canonice |
 | `Smtp__Enabled` | `true` | doar dacă vrei notificări pe email la programări |
 | `Smtp__Host`, `Smtp__Port`, `Smtp__Username`, `Smtp__Password` | datele furnizorului SMTP | |
 | `Smtp__FromAddress`, `Smtp__ToAddress` | expeditor / destinatar notificări | |
+| `GoogleCalendar__Enabled` | `true` | doar dacă vrei evenimentele confirmate în Google Calendar |
+| `GoogleCalendar__CalendarId` | adresa Gmail a cabinetului (sau id-ul unui calendar secundar) | calendarul trebuie partajat cu emailul contului de serviciu, cu „Modificare evenimente” |
+| `GoogleCalendar__ServiceAccountJson` sau `GoogleCalendar__ServiceAccountJsonPath` | conținutul cheii JSON, sau calea ei, ex. `/data/google-sa.json` | secret — niciodată în imagine sau în repo |
+
+**Gmail ca SMTP:** `Smtp__Host=smtp.gmail.com`, `Smtp__Port=587`, `Smtp__UseStartTls=true`,
+`Smtp__Username` și `Smtp__FromAddress` = adresa Gmail (Gmail rescrie alt expeditor),
+`Smtp__Password` = o **parolă de aplicație** (App Password; cere verificarea în doi pași pe cont —
+parola normală nu funcționează), `Smtp__ToAddress` = inboxul care primește notificările.
+
+**Google Calendar:** în Google Cloud se creează un proiect, se activează Calendar API, se creează
+un cont de serviciu și se descarcă cheia JSON; apoi, în Google Calendar, calendarul se partajează
+cu emailul contului de serviciu. Fără aceste variabile programările funcționează, doar fără
+sincronizare (starea rămâne „NotNeeded”). Clientul primește oricum invitația ca fișier `.ics`.
 
 Generarea cheii JWT (PowerShell):
 
@@ -102,6 +115,25 @@ panou. La prima pornire, migrațiile EF rulează automat și se creează contul 
   EF Core SQLite) și ICU sunt mai bine testate pe glibc decât pe musl.
 - **Migrațiile rulează la pornire** (`db.Database.MigrateAsync()` în `Program.cs`), deci nu e
   nevoie de un pas separat de migrare în pipeline.
+
+## Conținutul din seed — de verificat înainte de a face site-ul public
+
+`AdminSeed:SeedDemoContent` controlează tot conținutul inițial, nu doar exemple: cu `false`,
+seeder-ul creează doar contul de administrator, iar site-ul pornește gol (fără servicii, fără
+FAQ). De aceea la primul deploy se lasă `true`. Seeder-ul inserează doar când tabelele sunt
+goale, deci nu suprascrie nimic la deploy-urile următoare.
+
+Ce intră în baza de date:
+
+- **Serviciile (6)** — lista reală a cabinetului. Se păstrează.
+- **FAQ (6) și categoriile (5)** — de recitit, dar utile ca punct de plecare.
+- **Articolele (4)** — text de start, scris pentru site. De recitit înainte de publicare.
+- **Testimonialele (4)** — semnate „A.M.”, „D.R.”, „C.P.”, „I.S.”. **Sunt texte generate ca
+  exemplu, nu feedback real de la clienți.** Înainte ca site-ul să devină public, ele trebuie
+  șterse sau depublicate din panou — publicarea unor testimoniale inventate ca și cum ar fi
+  reale înseamnă practică comercială înșelătoare (ANPC) și, pentru un psiholog, o problemă de
+  deontologie profesională (Codul deontologic COPSI). Dacă există feedback real de la clienți,
+  el poate fi adăugat din panou, cu acordul lor și anonimizat.
 
 ## Backup
 

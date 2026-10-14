@@ -32,16 +32,25 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import CrudPageShell from '../components/CrudPageShell'
 import { getErrorMessage } from '../../../api/client'
 import {
+  cancelAppointment,
+  confirmAppointment,
   deleteAppointmentRequest,
   deleteContactMessage,
   getAppointmentRequests,
   getContactMessages,
   markAppointmentHandled,
   markContactMessageHandled,
+  rejectAppointment,
+  resyncAppointment,
 } from '../../../api/appointments'
-import { sessionModeLabels } from '../../../api/types'
-import type { AppointmentRequestDto, ContactMessageDto } from '../../../api/types'
-import { formatDateTimeRo } from '../../../components/common/formatters'
+import { appointmentStatusLabels, sessionModeLabels } from '../../../api/types'
+import type {
+  AppointmentRequestDto,
+  AppointmentStatus,
+  AppointmentTab,
+  ContactMessageDto,
+} from '../../../api/types'
+import { formatDateRo, formatDateTimeRo } from '../../../components/common/formatters'
 
 const PAGE_SIZE = 10
 
@@ -137,15 +146,73 @@ const GDPR_WARNING =
 
 // ------------------------------------------------- Cereri de programare ---
 
+const appointmentTabs: { value: AppointmentTab; label: string; empty: string }[] = [
+  { value: 'Pending', label: 'În așteptare', empty: 'Nu există cereri care așteaptă confirmare.' },
+  { value: 'Confirmed', label: 'Confirmate', empty: 'Nu există programări confirmate în viitor.' },
+  { value: 'History', label: 'Istoric', empty: 'Istoricul este gol.' },
+]
+
+const statusColors: Record<AppointmentStatus, 'warning' | 'success' | 'error' | 'default'> = {
+  Pending: 'warning',
+  Confirmed: 'success',
+  Rejected: 'error',
+  Cancelled: 'default',
+  Legacy: 'default',
+}
+
+// Ora cabinetului, indiferent de fusul orar al browserului.
+const SLOT_TIME_ZONE = 'Europe/Bucharest'
+
+/** Ex.: „luni, 12 octombrie 2026, 10:00–10:50”. */
+function formatSlot(startAt: string, endAt: string | null): string {
+  const start = formatDateRo(startAt, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: SLOT_TIME_ZONE,
+  })
+  const end = formatDateRo(endAt, { hour: '2-digit', minute: '2-digit', timeZone: SLOT_TIME_ZONE })
+  return end === '' ? start : `${start}–${end}`
+}
+
+type ActionKind = 'confirm' | 'reject' | 'cancel'
+
+const actionTexts: Record<ActionKind, { title: string; button: string; success: string }> = {
+  confirm: {
+    title: 'Confirmi programarea?',
+    button: 'Confirmă',
+    success: 'Programarea a fost confirmată, iar clientul a primit invitația pe email.',
+  },
+  reject: {
+    title: 'Respingi cererea?',
+    button: 'Respinge',
+    success: 'Cererea a fost respinsă, iar clientul a fost anunțat pe email.',
+  },
+  cancel: {
+    title: 'Anulezi programarea?',
+    button: 'Anulează programarea',
+    success: 'Programarea a fost anulată, iar clientul a fost anunțat pe email.',
+  },
+}
+
+interface PendingAction {
+  kind: ActionKind
+  request: AppointmentRequestDto
+}
+
 function AppointmentsPanel() {
+  const [tab, setTab] = useState<AppointmentTab>('Pending')
   const [items, setItems] = useState<AppointmentRequestDto[]>([])
   const [totalPages, setTotalPages] = useState(1)
   const [page, setPage] = useState(1)
-  const [filter, setFilter] = useState<HandledFilter>('all')
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const [reloadToken, setReloadToken] = useState(0)
 
   const [notes, setNotes] = useState<Record<number, string>>({})
@@ -154,12 +221,16 @@ function AppointmentsPanel() {
   const [deleteTarget, setDeleteTarget] = useState<AppointmentRequestDto | null>(null)
   const [deleting, setDeleting] = useState(false)
 
+  const [action, setAction] = useState<PendingAction | null>(null)
+  const [reason, setReason] = useState('')
+  const [acting, setActing] = useState(false)
+
   useEffect(() => {
     let cancelled = false
     setLoading(true)
     setError(null)
 
-    getAppointmentRequests({ page, pageSize: PAGE_SIZE, isHandled: handledParam(filter) })
+    getAppointmentRequests({ status: tab, page, pageSize: PAGE_SIZE })
       .then((result) => {
         if (cancelled) return
         setItems(result.items)
@@ -176,13 +247,58 @@ function AppointmentsPanel() {
     return () => {
       cancelled = true
     }
-  }, [page, filter, reloadToken])
+  }, [tab, page, reloadToken])
 
   const reload = () => setReloadToken((token) => token + 1)
 
-  const changeFilter = (next: HandledFilter) => {
-    setFilter(next)
+  const changeTab = (next: AppointmentTab) => {
+    setTab(next)
     setPage(1)
+    setSuccess(null)
+    setActionError(null)
+  }
+
+  const openAction = (kind: ActionKind, request: AppointmentRequestDto) => {
+    setReason('')
+    setAction({ kind, request })
+  }
+
+  const runAction = async () => {
+    if (action === null) return
+
+    setActing(true)
+    setActionError(null)
+    setSuccess(null)
+    try {
+      const { kind, request } = action
+      const message = reason.trim() || null
+      if (kind === 'confirm') await confirmAppointment(request.id)
+      else if (kind === 'reject') await rejectAppointment(request.id, message)
+      else await cancelAppointment(request.id, message)
+      setSuccess(actionTexts[kind].success)
+      reload()
+    } catch (err) {
+      // La 409, serverul trimite mesajul în `detail`, iar getErrorMessage îl întoarce ca atare.
+      setActionError(getErrorMessage(err))
+    } finally {
+      setActing(false)
+      setAction(null)
+    }
+  }
+
+  const resync = async (request: AppointmentRequestDto) => {
+    setActionError(null)
+    setSuccess(null)
+    setSavingId(request.id)
+    try {
+      await resyncAppointment(request.id)
+      setSuccess('Sincronizarea cu Google Calendar a fost reluată.')
+      reload()
+    } catch (err) {
+      setActionError(getErrorMessage(err))
+    } finally {
+      setSavingId(null)
+    }
   }
 
   const toggleHandled = async (request: AppointmentRequestDto, isHandled: boolean) => {
@@ -230,168 +346,310 @@ function AppointmentsPanel() {
     }
   }
 
+  const actionText = action === null ? null : actionTexts[action.kind]
+
   return (
     <Stack spacing={2.5}>
-      <FilterToggle value={filter} onChange={changeFilter} label="Filtrează cererile după stare" />
-
-      {error !== null && <Alert severity="error">{error}</Alert>}
-      {actionError !== null && (
-        <Alert severity="error" onClose={() => setActionError(null)}>
-          {actionError}
-        </Alert>
-      )}
-
-      {loading ? (
-        <ListSkeleton />
-      ) : items.length === 0 ? (
-        <Paper variant="outlined" sx={{ p: { xs: 3, sm: 5 }, textAlign: 'center' }}>
-          <Typography color="text.secondary">
-            {filter === 'pending'
-              ? 'Nu există cereri netratate. Toate au fost preluate.'
-              : filter === 'handled'
-                ? 'Nu există încă cereri marcate ca tratate.'
-                : 'Nu a fost primită nicio cerere de programare prin site.'}
-          </Typography>
-        </Paper>
-      ) : (
-        <Stack spacing={2}>
-          {items.map((request) => (
-            <Paper key={request.id} variant="outlined" sx={{ p: { xs: 2, sm: 2.5 } }}>
-              <Stack spacing={2}>
-                <Stack
-                  direction={{ xs: 'column', md: 'row' }}
-                  spacing={1.5}
-                  sx={{ justifyContent: 'space-between', alignItems: { md: 'center' } }}
-                >
-                  <Box sx={{ minWidth: 0 }}>
-                    <Typography component="h3" sx={{ fontWeight: 600 }}>
-                      {request.fullName}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Primită la {formatDateTimeRo(request.createdAt)}
-                    </Typography>
-                  </Box>
-
-                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexShrink: 0 }}>
-                    <Chip
-                      size="small"
-                      variant={request.isHandled ? 'filled' : 'outlined'}
-                      color={request.isHandled ? 'success' : 'warning'}
-                      label={request.isHandled ? 'Tratată' : 'Netratată'}
-                    />
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={request.isHandled}
-                          disabled={savingId === request.id}
-                          onChange={(event) => void toggleHandled(request, event.target.checked)}
-                          slotProps={{
-                            input: { 'aria-label': `Cerere tratată: ${request.fullName}` },
-                          }}
-                        />
-                      }
-                      label="Tratat"
-                    />
-                    <Tooltip title="Șterge cererea">
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => setDeleteTarget(request)}
-                        aria-label={`Șterge cererea de la ${request.fullName}`}
-                      >
-                        <DeleteOutlineOutlinedIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Stack>
-                </Stack>
-
-                <Divider />
-
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <DetailField label="Telefon">
-                      <Link href={`tel:${request.phone}`}>{request.phone}</Link>
-                    </DetailField>
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <DetailField label="E-mail">
-                      <Link href={`mailto:${request.email}`} sx={{ wordBreak: 'break-all' }}>
-                        {request.email}
-                      </Link>
-                    </DetailField>
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <DetailField label="Serviciu">{request.serviceName ?? 'Nespecificat'}</DetailField>
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <DetailField label="Mod preferat">
-                      {sessionModeLabels[request.preferredMode]}
-                    </DetailField>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <DetailField label="Interval preferat">
-                      {request.preferredTimeframe ?? 'Neprecizat'}
-                    </DetailField>
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <DetailField label="Mesaj">
-                      {request.message === null || request.message === '' ? (
-                        <Typography variant="body2" color="text.secondary" component="span">
-                          Fără mesaj
-                        </Typography>
-                      ) : (
-                        <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
-                          {request.message}
-                        </Box>
-                      )}
-                    </DetailField>
-                  </Grid>
-                </Grid>
-
-                <Stack spacing={1}>
-                  <TextField
-                    label="Notițe interne"
-                    multiline
-                    minRows={2}
-                    value={notes[request.id] ?? ''}
-                    onChange={(event) =>
-                      setNotes((current) => ({ ...current, [request.id]: event.target.value }))
-                    }
-                    helperText="Vizibile doar în panou. Nu nota informații clinice sensibile."
-                  />
-                  <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => void saveNotes(request)}
-                      loading={savingId === request.id}
-                    >
-                      Salvează notițele
-                    </Button>
-                    {savedId === request.id && (
-                      <Typography variant="caption" color="success.main">
-                        Notițele au fost salvate.
-                      </Typography>
-                    )}
-                  </Stack>
-                </Stack>
-              </Stack>
-            </Paper>
-          ))}
-        </Stack>
-      )}
-
-      {!loading && totalPages > 1 && (
-        <Stack sx={{ alignItems: 'center', pt: 1 }}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={(_event, next) => setPage(next)}
-            color="primary"
-            getItemAriaLabel={paginationAriaLabel}
+      <Tabs
+        value={tab}
+        onChange={(_event, next: AppointmentTab) => changeTab(next)}
+        aria-label="Starea programărilor"
+        variant="scrollable"
+        allowScrollButtonsMobile
+      >
+        {appointmentTabs.map((item) => (
+          <Tab
+            key={item.value}
+            value={item.value}
+            label={item.label}
+            id={`tab-programari-${item.value}`}
+            aria-controls="panou-programari"
           />
-        </Stack>
-      )}
+        ))}
+      </Tabs>
+
+      <Stack spacing={2.5} role="tabpanel" id="panou-programari" aria-labelledby={`tab-programari-${tab}`}>
+        {error !== null && <Alert severity="error">{error}</Alert>}
+        {actionError !== null && (
+          <Alert severity="error" onClose={() => setActionError(null)}>
+            {actionError}
+          </Alert>
+        )}
+        {success !== null && (
+          <Alert severity="success" onClose={() => setSuccess(null)}>
+            {success}
+          </Alert>
+        )}
+
+        {loading ? (
+          <ListSkeleton />
+        ) : items.length === 0 ? (
+          <Paper variant="outlined" sx={{ p: { xs: 3, sm: 5 }, textAlign: 'center' }}>
+            <Typography color="text.secondary">
+              {appointmentTabs.find((item) => item.value === tab)?.empty}
+            </Typography>
+          </Paper>
+        ) : (
+          <Stack spacing={2}>
+            {items.map((request) => {
+              const isLegacy = request.status === 'Legacy'
+              const isPending = request.status === 'Pending'
+              // Confirmatele trecute ajung în Istoric și nu mai au acțiuni.
+              const isUpcoming = request.status === 'Confirmed' && tab === 'Confirmed'
+
+              return (
+                <Paper key={request.id} variant="outlined" sx={{ p: { xs: 2, sm: 2.5 } }}>
+                  <Stack spacing={2}>
+                    <Stack
+                      direction={{ xs: 'column', md: 'row' }}
+                      spacing={1.5}
+                      sx={{ justifyContent: 'space-between', alignItems: { md: 'center' } }}
+                    >
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography component="h3" sx={{ fontWeight: 600 }}>
+                          {request.fullName}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Primită la {formatDateTimeRo(request.createdAt)}
+                        </Typography>
+                      </Box>
+
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        useFlexGap
+                        sx={{ alignItems: 'center', flexWrap: 'wrap', flexShrink: 0 }}
+                      >
+                        <Chip
+                          size="small"
+                          color={statusColors[request.status]}
+                          label={appointmentStatusLabels[request.status]}
+                        />
+                        {request.status === 'Confirmed' && request.googleSyncState === 'Synced' && (
+                          <Chip size="small" variant="outlined" color="success" label="Calendar ✓" />
+                        )}
+                        {request.status === 'Confirmed' && request.googleSyncState === 'Failed' && (
+                          <>
+                            <Chip size="small" variant="outlined" color="error" label="Calendar ✗" />
+                            <Button
+                              size="small"
+                              onClick={() => void resync(request)}
+                              loading={savingId === request.id}
+                            >
+                              Resincronizează
+                            </Button>
+                          </>
+                        )}
+                        {/* „Tratat” are sens doar pentru cererile vechi, fără flux de confirmare. */}
+                        {isLegacy && (
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={request.isHandled}
+                                disabled={savingId === request.id}
+                                onChange={(event) => void toggleHandled(request, event.target.checked)}
+                                slotProps={{
+                                  input: { 'aria-label': `Cerere tratată: ${request.fullName}` },
+                                }}
+                              />
+                            }
+                            label="Tratat"
+                          />
+                        )}
+                        {/* Ștergerea doar din Istoric, ca să nu rămână evenimente orfane în calendar. */}
+                        {tab === 'History' && (
+                          <Tooltip title="Șterge cererea">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => setDeleteTarget(request)}
+                              aria-label={`Șterge cererea de la ${request.fullName}`}
+                            >
+                              <DeleteOutlineOutlinedIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Stack>
+                    </Stack>
+
+                    <Divider />
+
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs: 12, md: 6 }}>
+                        {request.startAt !== null ? (
+                          <DetailField label="Data și ora">
+                            {formatSlot(request.startAt, request.endAt)}
+                          </DetailField>
+                        ) : (
+                          <DetailField label="Interval preferat">
+                            {request.preferredTimeframe ?? 'Neprecizat'}
+                          </DetailField>
+                        )}
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        <DetailField label="Serviciu">{request.serviceName ?? 'Nespecificat'}</DetailField>
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        <DetailField label={isLegacy ? 'Mod preferat' : 'Mod'}>
+                          {sessionModeLabels[request.preferredMode]}
+                        </DetailField>
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        <DetailField label="Telefon">
+                          <Link href={`tel:${request.phone}`}>{request.phone}</Link>
+                        </DetailField>
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        <DetailField label="E-mail">
+                          <Link href={`mailto:${request.email}`} sx={{ wordBreak: 'break-all' }}>
+                            {request.email}
+                          </Link>
+                        </DetailField>
+                      </Grid>
+                      <Grid size={{ xs: 12, md: 6 }}>
+                        <DetailField label="Mesaj">
+                          {request.message === null || request.message === '' ? (
+                            <Typography variant="body2" color="text.secondary" component="span">
+                              Fără mesaj
+                            </Typography>
+                          ) : (
+                            <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
+                              {request.message}
+                            </Box>
+                          )}
+                        </DetailField>
+                      </Grid>
+                      {request.rejectReason !== null && request.rejectReason !== '' && (
+                        <Grid size={12}>
+                          <DetailField label="Mesaj trimis clientului">
+                            <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
+                              {request.rejectReason}
+                            </Box>
+                          </DetailField>
+                        </Grid>
+                      )}
+                    </Grid>
+
+                    {(isPending || isUpcoming) && (
+                      <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
+                        {isPending && (
+                          <>
+                            <Button variant="contained" onClick={() => openAction('confirm', request)}>
+                              Confirmă
+                            </Button>
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              onClick={() => openAction('reject', request)}
+                            >
+                              Respinge
+                            </Button>
+                          </>
+                        )}
+                        {isUpcoming && (
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => openAction('cancel', request)}
+                          >
+                            Anulează
+                          </Button>
+                        )}
+                      </Stack>
+                    )}
+
+                    <Stack spacing={1}>
+                      <TextField
+                        label="Notițe interne"
+                        multiline
+                        minRows={2}
+                        value={notes[request.id] ?? ''}
+                        onChange={(event) =>
+                          setNotes((current) => ({ ...current, [request.id]: event.target.value }))
+                        }
+                        helperText="Vizibile doar în panou. Nu nota informații clinice sensibile."
+                      />
+                      <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={() => void saveNotes(request)}
+                          loading={savingId === request.id}
+                        >
+                          Salvează notițele
+                        </Button>
+                        {savedId === request.id && (
+                          <Typography variant="caption" color="success.main">
+                            Notițele au fost salvate.
+                          </Typography>
+                        )}
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                </Paper>
+              )
+            })}
+          </Stack>
+        )}
+
+        {!loading && totalPages > 1 && (
+          <Stack sx={{ alignItems: 'center', pt: 1 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={(_event, next) => setPage(next)}
+              color="primary"
+              getItemAriaLabel={paginationAriaLabel}
+            />
+          </Stack>
+        )}
+      </Stack>
+
+      <Dialog
+        open={action !== null}
+        onClose={() => {
+          if (!acting) setAction(null)
+        }}
+        maxWidth="xs"
+        fullWidth
+        aria-labelledby="dialog-actiune-programare"
+        aria-describedby="dialog-actiune-programare-text"
+      >
+        <DialogTitle id="dialog-actiune-programare">{actionText?.title}</DialogTitle>
+        <DialogContent dividers>
+          <Typography id="dialog-actiune-programare-text" variant="body2" sx={{ mb: 2 }}>
+            <strong>{action?.request.fullName}</strong>
+            {action?.request.startAt ? `, ${formatSlot(action.request.startAt, action.request.endAt)}` : ''}.{' '}
+            {action?.kind === 'confirm'
+              ? 'Clientul primește pe email confirmarea, cu invitația de calendar.'
+              : 'Clientul este anunțat pe email.'}
+          </Typography>
+          {action !== null && action.kind !== 'confirm' && (
+            <TextField
+              label="Mesaj pentru client (opțional)"
+              multiline
+              minRows={3}
+              fullWidth
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+              helperText="Apare în emailul trimis clientului."
+            />
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button onClick={() => setAction(null)} color="inherit" disabled={acting}>
+            Renunță
+          </Button>
+          <Button
+            onClick={() => void runAction()}
+            color={action?.kind === 'confirm' ? 'primary' : 'error'}
+            variant="contained"
+            loading={acting}
+          >
+            {actionText?.button}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog
         open={deleteTarget !== null}

@@ -69,6 +69,10 @@ dotnet user-secrets set "Smtp:Password"    "<parola SMTP>"
 dotnet user-secrets set "Smtp:FromAddress" "no-reply@exemplu.ro"
 dotnet user-secrets set "Smtp:ToAddress"   "adina@exemplu.ro"
 dotnet user-secrets set "Smtp:Enabled"     "true"
+# opțional — Google Calendar (cont de serviciu, vezi DEPLOY.md)
+dotnet user-secrets set "GoogleCalendar:Enabled"                "true"
+dotnet user-secrets set "GoogleCalendar:CalendarId"             "adina@gmail.com"
+dotnet user-secrets set "GoogleCalendar:ServiceAccountJsonPath" "C:\secrete\google-sa.json"
 ```
 
 În producție aceleași chei se dau ca variabile de mediu
@@ -77,6 +81,9 @@ Fără `Jwt:SigningKey` de minim 32 de bytes, aplicația **refuză să porneasc�
 
 Cu `Smtp:Enabled = false` emailurile nu se trimit, doar se loghează subiectul — cererile de
 programare se salvează oricum în baza de date, deci fluxul funcționează fără SMTP.
+
+Pentru Gmail: `smtp.gmail.com`, port 587, StartTLS și o **parolă de aplicație** (App Password),
+nu parola contului — detalii în `DEPLOY.md`.
 
 ## Migrări
 

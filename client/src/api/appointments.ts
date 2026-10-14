@@ -2,6 +2,7 @@ import api from './client'
 import type {
   AppointmentRequestDto,
   AppointmentRequestInput,
+  AppointmentTab,
   ContactMessageDto,
   ContactMessageInput,
   CreatedIdResponse,
@@ -26,6 +27,8 @@ export interface AppointmentsParams {
   page?: number
   pageSize?: number
   isHandled?: boolean
+  /** Doar pentru programări; ignorat la mesajele de contact. */
+  status?: AppointmentTab
 }
 
 export async function getAppointmentRequests(
@@ -41,6 +44,26 @@ export async function markAppointmentHandled(
   notes?: string | null,
 ): Promise<void> {
   await api.put(`/api/admin/appointments/${id}/handled`, { id, isHandled, notes: notes ?? null })
+}
+
+/** Pending → Confirmed: eveniment în Google Calendar + email cu .ics clientului. */
+export async function confirmAppointment(id: number): Promise<void> {
+  await api.put(`/api/admin/appointments/${id}/confirm`)
+}
+
+/** Pending → Rejected; motivul ajunge în emailul către client. */
+export async function rejectAppointment(id: number, reason?: string | null): Promise<void> {
+  await api.put(`/api/admin/appointments/${id}/reject`, { reason: reason ?? null })
+}
+
+/** Pending/Confirmed → Cancelled; șterge evenimentul din calendar și anunță clientul. */
+export async function cancelAppointment(id: number, reason?: string | null): Promise<void> {
+  await api.put(`/api/admin/appointments/${id}/cancel`, { reason: reason ?? null })
+}
+
+/** Reîncearcă sincronizarea cu Google Calendar (doar pentru GoogleSyncState = Failed). */
+export async function resyncAppointment(id: number): Promise<void> {
+  await api.post(`/api/admin/appointments/${id}/resync`)
 }
 
 export async function deleteAppointmentRequest(id: number): Promise<void> {

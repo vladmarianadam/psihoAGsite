@@ -17,7 +17,7 @@ export default defineConfig({
     // API-ul rămâne pe localhost: apelurile /api trec prin proxy-ul de mai jos,
     // deci portul 5180 nu trebuie expus în rețea.
     host: '0.0.0.0',
-    allowedHosts: ['.ngrok-free.dev', '.ngrok.io'],
+    allowedHosts: ['.ngrok-free.dev', '.ngrok.io', '.trycloudflare.com'],
     proxy: {
       '/api': { target: API_TARGET, changeOrigin: true, secure: false },
       '/uploads': { target: API_TARGET, changeOrigin: true, secure: false },

@@ -238,6 +238,14 @@ export interface AppointmentRequestDto {
   isHandled: boolean
   notes: string | null
   createdAt: string
+  status: AppointmentStatus
+  /** UTC ISO; null la cererile Legacy (fără oră fixă). */
+  startAt: string | null
+  endAt: string | null
+  rejectReason: string | null
+  googleSyncState: SyncState
+  confirmedAt: string | null
+  cancelledAt: string | null
 }
 
 export interface AppointmentRequestInput {
@@ -251,6 +259,100 @@ export interface AppointmentRequestInput {
   gdprConsent: boolean
   /** Câmp-capcană anti-spam: rămâne mereu gol pentru utilizatorii reali (plan §8). */
   honeypot?: string
+}
+
+// ----------------------------------------------------------------- Booking ---
+
+export type AppointmentStatus = 'Pending' | 'Confirmed' | 'Rejected' | 'Cancelled' | 'Legacy'
+export type SyncState = 'NotNeeded' | 'Pending' | 'Synced' | 'Failed'
+/** Filtrul taburilor din panou; History = respinse, anulate, vechi și confirmate trecute. */
+export type AppointmentTab = 'Pending' | 'Confirmed' | 'History'
+
+export const appointmentStatusLabels: Record<AppointmentStatus, string> = {
+  Pending: 'În așteptare',
+  Confirmed: 'Confirmată',
+  Rejected: 'Respinsă',
+  Cancelled: 'Anulată',
+  Legacy: 'Cerere veche',
+}
+
+export interface BookingSlotDto {
+  /** UTC ISO */
+  startAt: string
+  endAt: string
+  /** Ora locală (Europe/Bucharest), "HH:mm" — pentru afișare și grupare. */
+  localTime: string
+}
+
+export interface BookingDayDto {
+  /** "yyyy-MM-dd", dată locală */
+  date: string
+  slots: BookingSlotDto[]
+}
+
+export interface BookingSlotsDto {
+  isEnabled: boolean
+  timeZone: string
+  /** Ultima zi rezervabilă ("yyyy-MM-dd"), din HorizonDays. */
+  lastBookableDate: string
+  days: BookingDayDto[]
+}
+
+export interface BookingInput {
+  serviceId: number
+  /** UTC ISO, exact `startAt` din slotul ales. */
+  startAt: string
+  mode: 'Cabinet' | 'Online'
+  fullName: string
+  email: string
+  phone: string
+  message?: string | null
+  gdprConsent: boolean
+  honeypot?: string
+}
+
+export interface BookingSettingsDto {
+  isEnabled: boolean
+  slotStepMinutes: number
+  bufferMinutes: number
+  minNoticeHours: number
+  horizonDays: number
+  maxPendingPerEmail: number
+  useGoogleFreeBusy: boolean
+  /** Doar citire. */
+  timeZone: string
+  /** Doar citire: GoogleCalendar:Enabled e configurat pe server. */
+  googleCalendarConfigured: boolean
+}
+
+export type BookingSettingsInput = Omit<BookingSettingsDto, 'timeZone' | 'googleCalendarConfigured'>
+
+/** dayOfWeek: 0 = duminică … 6 = sâmbătă (System.DayOfWeek). Orele "HH:mm:ss". */
+export interface AvailabilityRuleDto {
+  id: number
+  dayOfWeek: number
+  startTime: string
+  endTime: string
+}
+
+export type AvailabilityRuleInput = Omit<AvailabilityRuleDto, 'id'>
+
+export interface AvailabilityExceptionDto {
+  id: number
+  /** "yyyy-MM-dd" */
+  date: string
+  isClosed: boolean
+  startTime: string | null
+  endTime: string | null
+  reason: string | null
+}
+
+export type AvailabilityExceptionInput = Omit<AvailabilityExceptionDto, 'id'>
+
+export interface AvailabilityDto {
+  settings: BookingSettingsDto
+  rules: AvailabilityRuleDto[]
+  exceptions: AvailabilityExceptionDto[]
 }
 
 // ----------------------------------------------------------------- Contact ---

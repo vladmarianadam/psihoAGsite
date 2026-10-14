@@ -206,8 +206,7 @@ export default function ServiceDetailPage() {
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4 }}>
               <Button
                 component={RouterLink}
-                to="/contact"
-                state={{ serviceId: service.id, serviceName: service.name }}
+                to={`/programare?service=${service.id}`}
                 variant="contained"
                 size="large"
               >
@@ -276,7 +275,7 @@ export default function ServiceDetailPage() {
                   <Divider sx={{ my: 2.5 }} />
 
                   <Stack spacing={1.5}>
-                    <Button component={RouterLink} to="/contact" variant="contained" fullWidth>
+                    <Button component={RouterLink} to={`/programare?service=${service.id}`} variant="contained" fullWidth>
                       Solicită o programare
                     </Button>
                     <Button href={phoneHref} variant="text" fullWidth startIcon={<PhoneIcon />}>
@@ -317,6 +316,7 @@ export default function ServiceDetailPage() {
         <CtaBanner
           title="Primul pas e cel mai greu"
           description="Trimite o cerere de programare, iar eu îți confirm ziua și ora potrivite pentru amândoi."
+          primaryTo={`/programare?service=${service.id}`}
           showPhone
         />
       </Container>

@@ -44,3 +44,5 @@ logs/
 publish/
 resources/*
 graphify-out/*
+# cheia contului de serviciu Google — secret
+data-calendar/

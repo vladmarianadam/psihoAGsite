@@ -121,6 +121,16 @@ builder.Services.AddRateLimiter(options =>
             Window = TimeSpan.FromHours(1),
             QueueLimit = 0,
         }));
+
+    // Sloturile libere (/programare): 60 / minut / IP — doar citire, dar interogează DB și Google.
+    options.AddPolicy("booking-read", context => RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 60,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0,
+        }));
 });
 
 // ---- CORS — originile din configurație, nu hardcodate (plan §9.5) -----------

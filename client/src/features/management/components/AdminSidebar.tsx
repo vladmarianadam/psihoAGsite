@@ -3,6 +3,7 @@ import { Link as RouterLink, useLocation } from 'react-router-dom'
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined'
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined'
+import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined'
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined'
 import FormatQuoteOutlinedIcon from '@mui/icons-material/FormatQuoteOutlined'
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'
@@ -33,6 +34,11 @@ const navItems: NavItem[] = [
     icon: <QuizOutlinedIcon fontSize="small" />,
   },
   { label: 'Programări', to: '/management/programari', icon: <EventNoteOutlinedIcon fontSize="small" /> },
+  {
+    label: 'Disponibilitate',
+    to: '/management/disponibilitate',
+    icon: <EventAvailableOutlinedIcon fontSize="small" />,
+  },
   { label: 'Setări', to: '/management/setari', icon: <SettingsOutlinedIcon fontSize="small" /> },
 ]
 

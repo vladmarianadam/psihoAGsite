@@ -19,6 +19,7 @@ public class GetSitemapEntriesQueryHandler : IRequestHandler<GetSitemapEntriesQu
         ("/", "weekly", 1.0m),
         ("/despre", "monthly", 0.8m),
         ("/servicii", "monthly", 0.9m),
+        ("/programare", "monthly", 0.9m),
         ("/blog", "weekly", 0.8m),
         ("/contact", "yearly", 0.7m),
         ("/termeni-si-conditii", "yearly", 0.3m),

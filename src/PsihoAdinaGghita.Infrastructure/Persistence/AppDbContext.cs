@@ -18,6 +18,9 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<FaqItem> FaqItems => Set<FaqItem>();
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
     public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
+    public DbSet<AvailabilityRule> AvailabilityRules => Set<AvailabilityRule>();
+    public DbSet<AvailabilityException> AvailabilityExceptions => Set<AvailabilityException>();
+    public DbSet<BookingSettings> BookingSettings => Set<BookingSettings>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

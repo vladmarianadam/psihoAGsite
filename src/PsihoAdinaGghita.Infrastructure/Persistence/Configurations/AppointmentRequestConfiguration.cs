@@ -54,5 +54,29 @@ public class AppointmentRequestConfiguration : IEntityTypeConfiguration<Appointm
 
         // Index pentru lista din admin: cereri nerezolvate, cele mai recente primele.
         builder.HasIndex(x => new { x.IsHandled, x.CreatedAt });
+
+        // ---- Programare pe slot ------------------------------------------------
+        // Fără HasDefaultValue în model: Pending = 0 e valoarea implicită CLR și EF ar omite-o
+        // la INSERT. Valoarea „Legacy” pentru rândurile vechi e pusă doar în migrare.
+        builder.Property(x => x.Status)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.Property(x => x.GoogleSyncState)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.Property(x => x.RejectReason)
+            .HasMaxLength(1000);
+
+        builder.Property(x => x.GoogleEventId)
+            .HasMaxLength(1024);
+
+        // Garanția anti-dublă-rezervare la nivel de DB: un singur Pending/Confirmed pe aceeași oră.
+        builder.HasIndex(x => x.StartAt)
+            .IsUnique()
+            .HasFilter("\"Status\" IN ('Pending','Confirmed')");
     }
 }

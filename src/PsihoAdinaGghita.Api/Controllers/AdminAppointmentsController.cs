@@ -44,6 +44,59 @@ public class AdminAppointmentsController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Pending → Confirmed: eveniment în Google Calendar + email cu invite.ics clientului.</summary>
+    [HttpPut("appointments/{id:int}/confirm")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> ConfirmAppointment(int id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new ConfirmAppointmentCommand(id), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPut("appointments/{id:int}/reject")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> RejectAppointment(
+        int id,
+        [FromBody] RejectAppointmentCommand command,
+        CancellationToken cancellationToken)
+    {
+        await _sender.Send(command with { Id = id }, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPut("appointments/{id:int}/cancel")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> CancelAppointment(
+        int id,
+        [FromBody] CancelAppointmentCommand command,
+        CancellationToken cancellationToken)
+    {
+        await _sender.Send(command with { Id = id }, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPost("appointments/{id:int}/resync")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> ResyncAppointment(int id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new ResyncAppointmentCommand(id), cancellationToken);
+        return NoContent();
+    }
+
     [HttpDelete("appointments/{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

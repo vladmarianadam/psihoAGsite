@@ -14,6 +14,7 @@ import ServiceDetailPage from './pages/ServiceDetailPage'
 import BlogPage from './pages/BlogPage'
 import ArticlePage from './pages/ArticlePage'
 import ContactPage from './pages/ContactPage'
+import BookingPage from './pages/BookingPage'
 import LegalPage from './pages/LegalPage'
 import NotFoundPage from './pages/NotFoundPage'
 
@@ -32,6 +33,7 @@ const TestimonialsPage = lazy(() => import('./features/management/pages/Testimon
 const FaqPage = lazy(() => import('./features/management/pages/FaqPage'))
 const AppointmentsPage = lazy(() => import('./features/management/pages/AppointmentsPage'))
 const SettingsPage = lazy(() => import('./features/management/pages/SettingsPage'))
+const AvailabilityPage = lazy(() => import('./features/management/pages/AvailabilityPage'))
 
 function RouteFallback() {
   return (
@@ -56,6 +58,7 @@ export default function App() {
           <Route path="blog/categorie/:slug" element={<BlogPage />} />
           <Route path="blog/:slug" element={<ArticlePage />} />
           <Route path="contact" element={<ContactPage />} />
+          <Route path="programare" element={<BookingPage />} />
           <Route path="termeni-si-conditii" element={<LegalPage document="terms" />} />
           <Route path="politica-de-confidentialitate" element={<LegalPage document="privacy" />} />
           <Route path="politica-de-cookies" element={<LegalPage document="cookies" />} />
@@ -90,6 +93,7 @@ export default function App() {
           <Route path="testimoniale" element={<TestimonialsPage />} />
           <Route path="intrebari-frecvente" element={<FaqPage />} />
           <Route path="programari" element={<AppointmentsPage />} />
+          <Route path="disponibilitate" element={<AvailabilityPage />} />
           <Route path="setari" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/management" replace />} />
         </Route>

@@ -20,12 +20,10 @@ public class MailKitEmailSender : IEmailSender
         _logger = logger;
     }
 
-    public async Task<bool> SendAsync(
-        string subject,
-        string htmlBody,
-        string? replyTo = null,
-        CancellationToken cancellationToken = default)
+    public async Task<bool> SendAsync(EmailMessage email, CancellationToken cancellationToken = default)
     {
+        var subject = email.Subject;
+
         // Dev fără SMTP: logăm doar subiectul, niciodată conținutul (date personale, plan §10).
         if (!_options.Enabled
             || string.IsNullOrWhiteSpace(_options.Host)
@@ -41,12 +39,13 @@ public class MailKitEmailSender : IEmailSender
         {
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(_options.FromName, _options.FromAddress));
-            message.To.Add(MailboxAddress.Parse(_options.ToAddress));
+            // To null = inboxul cabinetului.
+            message.To.Add(MailboxAddress.Parse(email.To ?? _options.ToAddress));
             message.Subject = subject;
 
             // Adresa vine din formular; dacă e invalidă o ignorăm în loc să pierdem notificarea.
-            if (!string.IsNullOrWhiteSpace(replyTo)
-                && MailboxAddress.TryParse(replyTo, out var replyToAddress)
+            if (!string.IsNullOrWhiteSpace(email.ReplyTo)
+                && MailboxAddress.TryParse(email.ReplyTo, out var replyToAddress)
                 && replyToAddress is not null)
             {
                 message.ReplyTo.Add(replyToAddress);
@@ -54,8 +53,12 @@ public class MailKitEmailSender : IEmailSender
 
             var builder = new BodyBuilder
             {
-                HtmlBody = EmailLayout.Wrap(subject, htmlBody)
+                HtmlBody = EmailLayout.Wrap(subject, email.HtmlBody)
             };
+
+            foreach (var attachment in email.Attachments ?? [])
+                builder.Attachments.Add(attachment.FileName, attachment.Content, ContentType.Parse(attachment.ContentType));
+
             message.Body = builder.ToMessageBody();
 
             using var client = new SmtpClient();

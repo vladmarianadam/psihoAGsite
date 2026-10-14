@@ -121,6 +121,7 @@ public class CreateAppointmentRequestCommandHandler : IRequestHandler<CreateAppo
             Message = Normalize(request.Message),
             GdprConsent = request.GdprConsent,
             IsHandled = false,
+            Status = AppointmentStatus.Legacy,
         };
 
         _db.AppointmentRequests.Add(entity);
@@ -134,7 +135,7 @@ public class CreateAppointmentRequestCommandHandler : IRequestHandler<CreateAppo
                 .FirstOrDefaultAsync(cancellationToken);
 
         var sent = await _emailSender.SendAsync(
-            $"Cerere de programare - {SingleLine(entity.FullName)}",
+            $"Cerere de programare #{entity.Id}",
             BuildHtmlBody(entity, serviceName),
             entity.Email,
             cancellationToken);
@@ -152,10 +153,6 @@ public class CreateAppointmentRequestCommandHandler : IRequestHandler<CreateAppo
 
     private static string? Normalize(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
-
-    /// <summary>Elimină CR/LF ca subiectul emailului să nu poată fi folosit pentru header injection.</summary>
-    private static string SingleLine(string value) =>
-        value.Replace('\r', ' ').Replace('\n', ' ').Trim();
 
     /// <summary>
     /// Corpul emailului se compune în Application, ca Infrastructure să rămână doar transport (plan §4).

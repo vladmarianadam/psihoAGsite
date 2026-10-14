@@ -147,7 +147,7 @@ export default function Navbar() {
               </Button>
               <Button
                 component={RouterLink}
-                to="/contact"
+                to="/programare"
                 variant="contained"
                 color={overPhoto ? 'secondary' : 'primary'}
               >
