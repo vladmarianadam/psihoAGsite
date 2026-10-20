@@ -13,31 +13,27 @@
 FROM node:22-alpine AS client
 WORKDIR /client
 
-# Straturile de dependențe se invalidează doar când se schimbă lockfile-ul.
-COPY client/package.json client/package-lock.json ./
-RUN npm ci
-
-COPY client/ ./
-
+# Puține straturi, intenționat: builderul platformei (podman rootless) poate copia întreg
+# sistemul de fișiere la fiecare COPY/RUN, iar cota de disc a build-ului e mică. De aceea
+# sursele se copiază o dată și totul rulează într-un singur RUN care își curăță cache-urile.
 # Gol înseamnă „apeluri relative către /api” — exact ce trebuie când API-ul servește SPA-ul.
-ENV VITE_API_BASE_URL=""
-RUN npm run build
+ENV VITE_API_BASE_URL="" NPM_CONFIG_UPDATE_NOTIFIER=false NPM_CONFIG_FUND=false NPM_CONFIG_AUDIT=false
+COPY client/ ./
+RUN npm ci \
+    && npm run build \
+    && rm -rf node_modules /root/.npm /tmp/*
 
 # ------------------------------------------------------------------- 2. API ---
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS api
 WORKDIR /src
 
-# Întâi doar fișierele de proiect: `dotnet restore` se re-rulează numai la schimbarea lor.
-# Soluția nu se copiază intenționat — referă și proiectul de teste, care nu intră în imagine.
-COPY src/PsihoAdinaGghita.Domain/PsihoAdinaGghita.Domain.csproj src/PsihoAdinaGghita.Domain/
-COPY src/PsihoAdinaGghita.Application/PsihoAdinaGghita.Application.csproj src/PsihoAdinaGghita.Application/
-COPY src/PsihoAdinaGghita.Infrastructure/PsihoAdinaGghita.Infrastructure.csproj src/PsihoAdinaGghita.Infrastructure/
-COPY src/PsihoAdinaGghita.Api/PsihoAdinaGghita.Api.csproj src/PsihoAdinaGghita.Api/
-RUN dotnet restore src/PsihoAdinaGghita.Api/PsihoAdinaGghita.Api.csproj
-
+# Același motiv: un singur COPY și un singur RUN (restore + publish), cu cache-ul NuGet
+# șters la final. Soluția nu se copiază — referă și proiectul de teste, care nu intră în imagine.
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 COPY src/ src/
 RUN dotnet publish src/PsihoAdinaGghita.Api/PsihoAdinaGghita.Api.csproj \
-    -c Release -o /app/publish --no-restore /p:UseAppHost=false
+        -c Release -o /app/publish /p:UseAppHost=false \
+    && rm -rf /root/.nuget /root/.local/share/NuGet /tmp/* src/*/obj src/*/bin
 
 # --------------------------------------------------------------- 3. Runtime ---
 # Debian, nu Alpine: biblioteca nativă SQLite (SQLitePCLRaw) și ICU sunt calea cea mai bine
