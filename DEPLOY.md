@@ -104,13 +104,12 @@ panou. La prima pornire, migrațiile EF rulează automat și se creează contul 
 - **Portul.** Entrypoint-ul pornește pe `$PORT` dacă platforma îl injectează, altfel pe 8080.
   Dacă în log apare `Now listening on: http://[::]:8080` dar platforma raportează componenta
   ca nepornită, câmpul „Listen port” nu coincide — pune 8080.
-- **Proprietarul volumelor.** Multe platforme montează volumele ca `root`, iar aplicația
-  rulează ca utilizatorul neprivilegiat `app` (UID 1654). Entrypoint-ul face `chown` pe `/data`
-  și `/app/wwwroot/uploads` înainte de a coborî privilegiile cu `gosu`, deci situația e
-  acoperită. Dacă platforma pornește containerul direct cu un UID fix, non-root, iar volumele
-  rămân ale lui root, `chown` eșuează silențios și vei vedea în log
-  `SQLite Error 14: 'unable to open database file'` — atunci volumul trebuie făcut scriibil
-  de acel UID din interfața platformei.
+- **Utilizatorul și volumele.** Platforma alege UID-ul cu care rulează containerul (pe sdploy,
+  „root” dintr-un user namespace rootless). Entrypoint-ul nu mai schimbă utilizatorul (`gosu`
+  eșua fără mesaj când UID-ul `app` nu era mapat), iar `/data` și `/app/wwwroot/uploads` sunt
+  scriibile de oricine. Prima linie din log, `[start] uid=… data=rw|RO uploads=rw|RO`, arată
+  imediat dacă volumele sunt scriibile; la `RO` vei vedea apoi
+  `SQLite Error 14: 'unable to open database file'`.
 - **Imagine Debian, nu Alpine.** Intenționat: `SQLitePCLRaw` (biblioteca nativă din spatele
   EF Core SQLite) și ICU sunt mai bine testate pe glibc decât pe musl.
 - **Migrațiile rulează la pornire** (`db.Database.MigrateAsync()` în `Program.cs`), deci nu e

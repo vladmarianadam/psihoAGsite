@@ -41,10 +41,9 @@ RUN dotnet publish src/PsihoAdinaGghita.Api/PsihoAdinaGghita.Api.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# tzdata: ora României în emailurile de programare. gosu: coborârea privilegiilor din
-# entrypoint, după ce volumele montate de platformă primesc proprietarul corect.
+# tzdata: ora României în emailurile de programare.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends tzdata gosu \
+    && apt-get install -y --no-install-recommends tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 ENV TZ=Europe/Bucharest
@@ -71,10 +70,12 @@ ENV HOME=/tmp
 
 EXPOSE 8080
 
-# Entrypoint-ul rezolvă două lucruri pe care platformele le tratează diferit:
-#  1. portul — se ia din $PORT dacă este injectat, altfel 8080 (valoarea din EXPOSE);
-#  2. volumele — dacă sunt montate ca root (uzual pe PaaS), li se dă proprietarul `app`
-#     înainte de a coborî privilegiile; altfel EF Core nu poate scrie psiho.db.
-# Aplicația rulează în final ca utilizatorul neprivilegiat `app`, nu ca root.
+# Entrypoint simplu, fără schimbare de utilizator: pe platforme cu podman rootless, „root”
+# din container e deja un UID neprivilegiat pe gazdă, iar `gosu app` poate eșua (UID-ul 1654
+# nu e mapat în user namespace) — procesul murea fără niciun mesaj. Aplicația rulează cu
+# UID-ul pe care îl alege platforma; directoarele de date sunt scriibile de oricine (mai sus).
+#  - portul: $PORT dacă e injectat, altfel 8080 (valoarea din EXPOSE);
+#  - 0.0.0.0, nu „+”: ascultă explicit pe IPv4, unde verifică platforma (ready check);
+#  - 2>&1: erorile de pornire ajung în același log cu restul.
 # Prima linie din log: UID-ul real și dacă volumele sunt scriibile — diagnostic la pornire.
-ENTRYPOINT ["/bin/sh", "-c", "echo \"[start] uid=$(id -u) port=${PORT:-8080} data=$( [ -w /data ] && echo rw || echo RO ) uploads=$( [ -w /app/wwwroot/uploads ] && echo rw || echo RO )\"; if [ \"$(id -u)\" = 0 ]; then chown -R app:app /data /app/wwwroot/uploads 2>/dev/null || true; exec gosu app dotnet PsihoAdinaGghita.Api.dll --urls \"http://+:${PORT:-8080}\"; else exec dotnet PsihoAdinaGghita.Api.dll --urls \"http://+:${PORT:-8080}\"; fi"]
+ENTRYPOINT ["/bin/sh", "-c", "echo \"[start] uid=$(id -u) port=${PORT:-8080} data=$( [ -w /data ] && echo rw || echo RO ) uploads=$( [ -w /app/wwwroot/uploads ] && echo rw || echo RO )\"; exec dotnet PsihoAdinaGghita.Api.dll --urls \"http://0.0.0.0:${PORT:-8080}\" 2>&1"]
