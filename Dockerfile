@@ -61,7 +61,13 @@ ENV ConnectionStrings__Default="Data Source=/data/psiho.db"
 COPY --from=api /app/publish ./
 COPY --from=client /client/dist ./wwwroot/
 
-RUN mkdir -p /data /app/wwwroot/uploads && chown -R app:app /data /app
+# Unele platforme (ex. sdploy) pornesc containerul cu un UID arbitrar, non-root (ex. 1037),
+# nu cu `app`. Directoarele de date sunt deci scriibile de oricine, iar HOME indică /tmp,
+# ca .NET să nu încerce să scrie în / (sistem de fișiere read-only pentru acel UID).
+RUN mkdir -p /data /app/wwwroot/uploads \
+    && chown -R app:app /data /app \
+    && chmod 0777 /data /app/wwwroot/uploads
+ENV HOME=/tmp
 
 EXPOSE 8080
 
@@ -70,4 +76,5 @@ EXPOSE 8080
 #  2. volumele — dacă sunt montate ca root (uzual pe PaaS), li se dă proprietarul `app`
 #     înainte de a coborî privilegiile; altfel EF Core nu poate scrie psiho.db.
 # Aplicația rulează în final ca utilizatorul neprivilegiat `app`, nu ca root.
-ENTRYPOINT ["/bin/sh", "-c", "if [ \"$(id -u)\" = 0 ]; then chown -R app:app /data /app/wwwroot/uploads 2>/dev/null || true; exec gosu app dotnet PsihoAdinaGghita.Api.dll --urls \"http://+:${PORT:-8080}\"; else exec dotnet PsihoAdinaGghita.Api.dll --urls \"http://+:${PORT:-8080}\"; fi"]
+# Prima linie din log: UID-ul real și dacă volumele sunt scriibile — diagnostic la pornire.
+ENTRYPOINT ["/bin/sh", "-c", "echo \"[start] uid=$(id -u) port=${PORT:-8080} data=$( [ -w /data ] && echo rw || echo RO ) uploads=$( [ -w /app/wwwroot/uploads ] && echo rw || echo RO )\"; if [ \"$(id -u)\" = 0 ]; then chown -R app:app /data /app/wwwroot/uploads 2>/dev/null || true; exec gosu app dotnet PsihoAdinaGghita.Api.dll --urls \"http://+:${PORT:-8080}\"; else exec dotnet PsihoAdinaGghita.Api.dll --urls \"http://+:${PORT:-8080}\"; fi"]
