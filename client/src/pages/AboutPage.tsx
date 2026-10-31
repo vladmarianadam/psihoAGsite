@@ -27,7 +27,7 @@ import VolunteerActivismOutlinedIcon from '@mui/icons-material/VolunteerActivism
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined'
 
 import CtaBanner from '../components/common/CtaBanner'
-import PhotoImage from '../components/common/PhotoImage'
+import BlendedPortrait from '../components/common/BlendedPortrait'
 import PlaceholderImage from '../components/common/PlaceholderImage'
 import portretAdina from '../assets/adina-gghita-portret.jpg'
 import SectionHeading from '../components/common/SectionHeading'
@@ -132,7 +132,7 @@ export default function AboutPage() {
         sx={({ palette: { brand } }) => ({
           pt: { xs: 6, md: 9 },
           pb: { xs: 5, md: 7 },
-          backgroundColor: 'background.paper',
+          backgroundColor: 'var(--section)',
           borderBottom: '1px solid',
           borderColor: 'divider',
           backgroundImage: [
@@ -183,12 +183,7 @@ export default function AboutPage() {
             </Grid>
 
             <Grid size={{ xs: 12, md: 5 }}>
-              <PhotoImage
-                src={portretAdina}
-                alt={`${site.shortName}, ${site.role.toLowerCase()}`}
-                ratio={4 / 5}
-                rounded={2}
-              />
+              <BlendedPortrait src={portretAdina} alt={`${site.shortName}, ${site.role.toLowerCase()}`} />
             </Grid>
           </Grid>
         </Container>
@@ -296,7 +291,7 @@ export default function AboutPage() {
         component="section"
         sx={{
           py: { xs: 7, md: 10 },
-          backgroundColor: 'background.paper',
+          backgroundColor: 'var(--section)',
           borderTop: '1px solid',
           borderBottom: '1px solid',
           borderColor: 'divider',
@@ -322,7 +317,7 @@ export default function AboutPage() {
                   borderRadius: 2,
                   border: '1px solid',
                   borderColor: 'divider',
-                  backgroundColor: 'background.default',
+                  backgroundColor: 'var(--glass)',
                 }}
               >
                 <WorkspacePremiumOutlinedIcon sx={{ color: 'secondary.dark', mt: 0.25 }} />
@@ -373,7 +368,7 @@ export default function AboutPage() {
                         justifyContent: 'center',
                         mb: 2.5,
                         color: 'primary.main',
-                        backgroundColor: 'background.default',
+                        backgroundColor: 'var(--glass)',
                         border: '1px solid',
                         borderColor: 'divider',
                       }}
@@ -400,7 +395,7 @@ export default function AboutPage() {
         component="section"
         sx={{
           py: { xs: 7, md: 10 },
-          backgroundColor: 'background.paper',
+          backgroundColor: 'var(--section)',
           borderTop: '1px solid',
           borderColor: 'divider',
         }}
@@ -421,7 +416,7 @@ export default function AboutPage() {
                     borderRadius: 2,
                     border: '1px solid',
                     borderColor: 'divider',
-                    backgroundColor: 'background.default',
+                    backgroundColor: 'var(--glass)',
                   }}
                 >
                   {/* Fotografiile reale ale cabinetului urmează (plan §11). */}

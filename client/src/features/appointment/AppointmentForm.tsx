@@ -420,7 +420,7 @@ export default function AppointmentForm({
       sx={
         compact
           ? { p: 0, backgroundColor: 'transparent' }
-          : { p: { xs: 2.5, md: 4 }, borderRadius: 3, backgroundColor: 'background.paper' }
+          : { p: { xs: 2.5, md: 4 }, borderRadius: 3, backgroundColor: 'var(--glass)', backdropFilter: 'blur(16px)' }
       }
     >
       {content}

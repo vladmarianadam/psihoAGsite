@@ -72,7 +72,7 @@ export default function ArticleList({
           border: '1px dashed',
           borderColor: 'divider',
           borderRadius: 3,
-          bgcolor: 'background.paper',
+          bgcolor: 'var(--glass)',
         }}
       >
         <Typography variant="h5" component="p" sx={{ color: 'text.primary' }}>

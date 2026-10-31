@@ -21,6 +21,14 @@ const clampLines = (lines: number) =>
     overflow: 'hidden',
   }) as const
 
+/** Categoria ca pastilă în gradientul accentelor (contrast AA cu --on-accent în ambele teme). */
+const categoryChipSx = {
+  background: 'linear-gradient(100deg, var(--accent-1), var(--accent-2))',
+  color: 'var(--on-accent)',
+  boxShadow: '0 6px 18px -8px var(--c2)',
+  '&:hover': { filter: 'brightness(1.08)' },
+} as const
+
 export default function ArticleCard({ article, featured = false }: ArticleCardProps) {
   const ratio = featured ? 16 / 9 : 4 / 3
   const dateLabel = formatDateRo(article.publishedAt)
@@ -39,14 +47,23 @@ export default function ArticleCard({ article, featured = false }: ArticleCardPr
         }}
       >
         {article.coverImageUrl ? (
-          <CardMedia
-            component="img"
-            src={article.coverImageUrl}
-            alt={article.coverImageAlt ?? article.title}
-            loading="lazy"
-            decoding="async"
-            sx={{ width: '100%', aspectRatio: String(ratio), objectFit: 'cover' }}
-          />
+          // Ramă cu overflow ascuns: imaginea se mărește la hover fără să intre peste text.
+          <Box sx={{ width: '100%', overflow: 'hidden' }}>
+            <CardMedia
+              component="img"
+              src={article.coverImageUrl}
+              alt={article.coverImageAlt ?? article.title}
+              loading="lazy"
+              decoding="async"
+              sx={{
+                width: '100%',
+                aspectRatio: String(ratio),
+                objectFit: 'cover',
+                transition: 'transform .6s cubic-bezier(.2,.8,.2,1)',
+                '.MuiCard-root:hover &': { transform: 'scale(1.06)' },
+              }}
+            />
+          </Box>
         ) : (
           <PlaceholderImage
             ratio={ratio}
@@ -121,24 +138,10 @@ export default function ArticleCard({ article, featured = false }: ArticleCardPr
               clickable
               size="small"
               label={article.categoryName}
-              sx={{
-                bgcolor: 'background.paper',
-                border: '1px solid',
-                borderColor: 'divider',
-                color: 'text.primary',
-              }}
+              sx={categoryChipSx}
             />
           ) : (
-            <Chip
-              size="small"
-              label={article.categoryName}
-              sx={{
-                bgcolor: 'background.paper',
-                border: '1px solid',
-                borderColor: 'divider',
-                color: 'text.primary',
-              }}
-            />
+            <Chip size="small" label={article.categoryName} sx={categoryChipSx} />
           )}
         </Box>
       )}

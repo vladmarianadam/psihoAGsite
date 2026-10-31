@@ -46,8 +46,9 @@ export default function Navbar() {
       <AppBar
         position="sticky"
         sx={(theme) => ({
-          backgroundColor: scrolled ? alpha(theme.palette.background.default, 0.88) : 'transparent',
-          backdropFilter: scrolled ? 'saturate(180%) blur(12px)' : 'none',
+          // Sticlă mată după derulare: destul de opacă pentru text, destul de clară ca aurora să se vadă.
+          backgroundColor: scrolled ? alpha(theme.palette.background.default, 0.7) : 'transparent',
+          backdropFilter: scrolled ? 'saturate(180%) blur(18px)' : 'none',
           boxShadow: scrolled ? `0 6px 24px rgba(${theme.palette.brand.shadowRgb}, 0.08)` : 'none',
           borderBottom: '1px solid',
           borderColor: scrolled ? 'divider' : 'transparent',

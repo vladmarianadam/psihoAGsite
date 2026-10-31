@@ -18,6 +18,8 @@ import type { ServiceListItemDto } from '../../api/types'
 
 interface ServiceCardProps {
   service: ServiceListItemDto
+  /** Poziția în grilă: fiecare card primește una dintre cele patru lumini ale temei (--c1…--c4). */
+  index?: number
 }
 
 /**
@@ -44,12 +46,13 @@ const clampLines = (lines: number) =>
     overflow: 'hidden',
   }) as const
 
-export default function ServiceCard({ service }: ServiceCardProps) {
+export default function ServiceCard({ service, index = 0 }: ServiceCardProps) {
   const Icon = (service.iconName && iconMap[service.iconName]) || PsychologyIcon
   const price = formatPriceRo(service.price)
 
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    // --accent colorează iconița, inelul de sub cursor și haloul la hover (theme.ts).
+    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', '--accent': `var(--c${(index % 4) + 1})` }}>
       <CardContent sx={{ flexGrow: 1, p: { xs: 2.5, md: 3 } }}>
         <Box
           aria-hidden="true"
@@ -60,13 +63,13 @@ export default function ServiceCard({ service }: ServiceCardProps) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            bgcolor: 'background.default',
-            border: '1px solid',
-            borderColor: 'divider',
+            background: 'color-mix(in oklab, var(--accent) 20%, transparent)',
+            border: '1px solid color-mix(in oklab, var(--accent) 45%, transparent)',
             mb: 2,
           }}
         >
-          <Icon sx={{ fontSize: 27, color: 'primary.main' }} />
+          {/* Amestecat cu culoarea textului, ca și luminile pale să rămână vizibile pe fundal deschis. */}
+          <Icon sx={{ fontSize: 27, color: 'color-mix(in oklab, var(--accent) 65%, var(--text))' }} />
         </Box>
 
         <Typography variant="h4" component="h3" sx={{ color: 'text.primary' }}>

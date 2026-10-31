@@ -4,12 +4,23 @@ import { Box } from '@mui/material'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import WhatsAppFab from '../common/WhatsAppFab'
+import QuickContactDock from '../common/QuickContactDock'
 import CookieBanner from '../common/CookieBanner'
+import AuroraBackground from '../common/AuroraBackground'
+import { useReveal, useSpotlight } from './useAmbientEffects'
 
 /** Învelișul tuturor paginilor publice: navigație, conținut, footer și elementele flotante. */
 export default function Layout() {
+  useReveal()
+  useSpotlight()
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+    // Pe mobil, spațiu jos pentru bara de contact rapid, ca să nu acopere finalul footerului.
+    // `overflow-x: clip` taie halourile care ies din ecran fără să strice bara de navigare sticky.
+    <Box
+      sx={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', pb: { xs: 10, md: 0 }, overflowX: 'clip' }}
+    >
+      <AuroraBackground />
       {/* Link de salt pentru navigarea la tastatură — vizibil doar când primește focus. */}
       <Box
         component="a"
@@ -46,6 +57,7 @@ export default function Layout() {
       <Footer />
 
       <WhatsAppFab />
+      <QuickContactDock />
       <CookieBanner />
     </Box>
   )

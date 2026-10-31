@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { flushSync } from 'react-dom'
 import { ThemeProvider } from '@mui/material/styles'
 
 import { buildTheme, DEFAULT_THEME_ID, isThemeId, palettes, type ThemeId } from './theme'
@@ -12,7 +13,8 @@ export const THEME_STORAGE_KEY = 'psiho-theme'
 interface ThemeModeContextValue {
   themeId: ThemeId
   setThemeId: (id: ThemeId) => void
-  toggleTheme: () => void
+  /** Cu `origin` (punctul apăsat), noua temă se dezvăluie într-un cerc care pornește de acolo. */
+  toggleTheme: (origin?: { x: number; y: number }) => void
 }
 
 const ThemeModeContext = createContext<ThemeModeContextValue | null>(null)
@@ -50,9 +52,34 @@ export function ThemeModeProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const toggleTheme = useCallback(() => {
-    setThemeId(themeId === 'calm' ? 'seaside' : 'calm')
-  }, [themeId, setThemeId])
+  const toggleTheme = useCallback(
+    (origin?: { x: number; y: number }) => {
+      const next: ThemeId = themeId === 'calm' ? 'seaside' : 'calm'
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+      // Fără View Transitions (sau cu mișcare redusă), tema se schimbă direct, cu tranziția de culoare din CSS.
+      if (!origin || reduceMotion || !document.startViewTransition) {
+        setThemeId(next)
+        return
+      }
+
+      // Captura „după” trebuie să conțină deja noua temă, deci randarea se face sincron.
+      const apply = () => {
+        flushSync(() => setThemeId(next))
+        document.documentElement.dataset.theme = next
+      }
+
+      const { x, y } = origin
+      const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
+      document.startViewTransition(apply).ready.then(() => {
+        document.documentElement.animate(
+          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+          { duration: 800, easing: 'cubic-bezier(.6,0,.2,1)', pseudoElement: '::view-transition-new(root)' },
+        )
+      })
+    },
+    [themeId, setThemeId],
+  )
 
   const value = useMemo(() => ({ themeId, setThemeId, toggleTheme }), [themeId, setThemeId, toggleTheme])
 

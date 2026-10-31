@@ -409,7 +409,7 @@ export default function ArticlePage() {
       </Container>
 
       {related.length > 0 && (
-        <Box sx={{ bgcolor: 'background.paper', borderTop: '1px solid', borderColor: 'divider' }}>
+        <Box sx={{ bgcolor: 'var(--section)', borderTop: '1px solid', borderColor: 'divider' }}>
           <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 } }}>
             <Typography variant="h2" component="h2" sx={{ mb: { xs: 3, md: 4 } }}>
               Articole similare

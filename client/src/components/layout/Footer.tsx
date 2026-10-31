@@ -9,6 +9,7 @@ import VerifiedIcon from '@mui/icons-material/Verified'
 import { getServices } from '../../api/services'
 import type { ServiceListItemDto } from '../../api/types'
 import { mailHref, phoneHref, site } from '../../config/site'
+import WaveDivider from '../common/WaveDivider'
 
 /** Doar pagini publice — panoul de management nu este listat nicăieri (plan §7). */
 const pageLinks: ReadonlyArray<{ label: string; to: string }> = [
@@ -111,13 +112,13 @@ export default function Footer() {
     <Box
       component="footer"
       sx={{
+        position: 'relative',
         mt: 'auto',
         pt: { xs: 6, md: 8 },
         pb: 3,
         color: tone.text,
-        backgroundColor: imagery ? palette.brand.primaryDark : 'background.paper',
-        borderTop: '1px solid',
-        borderColor: imagery ? 'transparent' : 'divider',
+        // Fără fotografie, footerul e sticlă peste aurora, legat de pagină printr-un val.
+        backgroundColor: imagery ? palette.brand.background : 'var(--section)',
         // Cu fotografie: banda de faleză cu maci, întunecată ca textul să rămână lizibil.
         ...(imagery && {
           backgroundImage: [
@@ -130,6 +131,8 @@ export default function Footer() {
         }),
       }}
     >
+      {!imagery && <WaveDivider edge="top" fill="var(--section)" />}
+
       <Container maxWidth="lg">
         <Grid container spacing={{ xs: 4, md: 5 }}>
           {/* 1. Identitatea cabinetului */}

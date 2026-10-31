@@ -3,24 +3,7 @@ import { Link as RouterLink } from 'react-router-dom'
 import { Box, Button, Container, Link, Paper, Slide, Stack, Typography } from '@mui/material'
 import CookieIcon from '@mui/icons-material/Cookie'
 
-/** Cheia din localStorage în care se memorează alegerea vizitatorului. */
-const CONSENT_KEY = 'psiho-cookie-consent'
-
-/**
- * Eveniment intern: îl ascultă butonul flotant de WhatsApp, ca să urce deasupra
- * bannerului cât timp acesta e afișat.
- */
-const CONSENT_EVENT = 'psiho-cookie-consent-change'
-
-/** `true` dacă vizitatorul a ales deja (bannerul nu mai trebuie afișat). */
-function hasCookieChoice(): boolean {
-  try {
-    return window.localStorage.getItem(CONSENT_KEY) !== null
-  } catch {
-    // Stocarea locală poate fi indisponibilă (mod privat) — tratăm ca „fără alegere".
-    return false
-  }
-}
+import { CONSENT_EVENT, CONSENT_KEY, hasCookieChoice } from './cookieConsent'
 
 /**
  * Informare despre cookie-uri. Site-ul folosește doar cookie-uri strict necesare

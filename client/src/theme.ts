@@ -1,4 +1,4 @@
-import { createTheme, responsiveFontSizes, type Theme } from '@mui/material/styles'
+import { alpha, createTheme, responsiveFontSizes, type Theme } from '@mui/material/styles'
 
 import seasideHero from './assets/seaside-hero.jpg'
 import seasideFooter from './assets/seaside-footer.jpg'
@@ -9,14 +9,16 @@ export type ThemeId = 'calm' | 'seaside'
 /**
  * Culorile de brand ale unei teme. Aceleași chei există în fiecare temă, astfel încât
  * componentele să citească `theme.palette.brand.*` fără să știe care temă e activă.
+ * Tot de aici se generează variabilele CSS (`--bg`, `--c1`…) folosite în index.css.
  */
 export interface BrandPalette {
+  mode: 'light' | 'dark'
   primary: string
   primaryDark: string
   primaryLight: string
   secondary: string
   secondaryDark: string
-  /** Accent rar, pentru mici evidențieri (maci în tema „seaside”). */
+  /** Accent rar, pentru mici evidențieri. */
   accent: string
   background: string
   surface: string
@@ -25,13 +27,22 @@ export interface BrandPalette {
   border: string
   /** Culoarea umbrelor, ca triplet RGB („44, 54, 57”), pentru rgba(). */
   shadowRgb: string
-  /** Fundalul secțiunilor „tint” — o valoare validă pentru `background-image` (gradient CSS). */
-  sectionTint: string
-  /** Fundalul benzii de apel la acțiune (gradient CSS). */
+  /** Cele patru lumini ale fundalului animat (aurora) — decorative, fără cerințe de contrast. */
+  aurora: [string, string, string, string]
+  /** Modul de amestec al luminilor: `multiply` pe fundal deschis, `screen` pe fundal închis. */
+  blend: 'multiply' | 'screen'
+  /** Accente sigure pentru text și butoane (contrast AA verificat pe fundalul temei). */
+  accents: [string, string, string]
+  /** Textul pus peste accente (butoane pline, etichete-pastilă). */
+  onAccent: string
+  /** Gradientul butoanelor secundare și textul de pe ele. */
+  secondaryGradient: [string, string]
+  onSecondary: string
+  /** Fundalul benzii de apel la acțiune (gradient CSS); textul de pe ea e alb. */
   ctaGradient: string
   /**
-   * Fotografii de atmosferă pentru hero și footer. Când lipsesc, secțiunile folosesc
-   * gradientele discrete ale temei; când există, textul trece pe deschis peste imagine.
+   * Fotografii de atmosferă pentru hero și footer. Când lipsesc, secțiunile rămân pe aurora;
+   * când există, textul trece pe deschis peste imagine.
    */
   imagery?: {
     hero: string
@@ -51,59 +62,67 @@ declare module '@mui/material/styles' {
 }
 
 export const palettes: Record<ThemeId, BrandPalette> = {
-  // Paleta din plan §6 — calmă, adaptată unui cabinet de psihologie.
+  // „Dimineață la mare” — aqua, cer, lavandă și mentă pe alb înghețat.
   calm: {
-    primary: '#4A6D7C',
-    primaryDark: '#365360',
-    primaryLight: '#6E909E',
-    secondary: '#C9A882',
-    secondaryDark: '#AD8B64',
-    accent: '#AD8B64',
-    background: '#FAF8F5',
+    mode: 'light',
+    primary: '#0F57B0',
+    primaryDark: '#0B4289',
+    primaryLight: '#3AA0FF',
+    secondary: '#2FD6C3',
+    secondaryDark: '#0B7A71',
+    accent: '#7C5CFF',
+    background: '#EEF5FB',
     surface: '#FFFFFF',
-    text: '#2C3639',
-    textMuted: '#5B686C',
-    border: '#E6E0D8',
-    shadowRgb: '44, 54, 57',
-    sectionTint: 'linear-gradient(#C9A88214, #C9A88214)',
+    text: '#0F1D33',
+    textMuted: '#3B4A63',
+    border: '#D3E1EE',
+    shadowRgb: '15, 29, 51',
+    aurora: ['#3AA0FF', '#7C5CFF', '#2FD6C3', '#9FE3FF'],
+    blend: 'multiply',
+    // Variante închise ale luminilor: text alb peste ele ≥ 4.5:1, iar ca text pe fundal ≥ 4.5:1.
+    accents: ['#0F57B0', '#5A3FD6', '#0B7A71'],
+    onAccent: '#FFFFFF',
+    secondaryGradient: ['#2FD6C3', '#9FE3FF'],
+    onSecondary: '#0F1D33',
     ctaGradient: [
-      'radial-gradient(90% 130% at 100% 0%, #AD8B6459 0%, transparent 58%)',
-      'linear-gradient(135deg, #4A6D7C 0%, #365360 100%)',
+      'radial-gradient(80% 130% at 100% 0%, #2FD6C366 0%, transparent 58%)',
+      'linear-gradient(125deg, #0F57B0 0%, #5A3FD6 100%)',
     ].join(', '),
   },
-  // „Răsărit la mare” — inspirată din fotografia cu marea în amurg și maci pe faleză:
-  // albastrul adânc al apei, cerul ambră de la orizont, nisipul cald și roșul macilor.
+  // „Apus la mare” — coral, magenta, ambră și violet pe prună; păstrează fotografia cu marea.
   seaside: {
-    primary: '#3F5A73',
-    primaryDark: '#2C4256',
-    primaryLight: '#7A97B0',
-    secondary: '#F29B5C',
-    secondaryDark: '#C97D45',
-    accent: '#D9432B',
-    background: '#FBF3E8',
-    surface: '#FFFFFF',
-    text: '#22303B',
-    textMuted: '#55656F',
-    border: '#E9DCCB',
-    shadowRgb: '34, 48, 59',
-    // Amurg peste nisip: piersică sus, albastru de cer jos.
-    sectionTint: [
-      'radial-gradient(120% 90% at 0% 0%, #F29B5C2E 0%, transparent 55%)',
-      'radial-gradient(110% 90% at 100% 100%, #7A97B033 0%, transparent 55%)',
-      'linear-gradient(180deg, #FFF7EE 0%, #F6EEE4 100%)',
-    ].join(', '),
-    // Soare la orizont → apă adâncă; textul alb rămâne lizibil pe toată lungimea.
+    mode: 'dark',
+    primary: '#FF7A59',
+    primaryDark: '#E2553A',
+    primaryLight: '#FFA184',
+    secondary: '#FFC15E',
+    secondaryDark: '#FF3D7F',
+    accent: '#FF3D7F',
+    background: '#1B0F2A',
+    surface: '#2A1838',
+    text: '#FFF4EC',
+    textMuted: '#E3C9C0',
+    border: '#463052',
+    shadowRgb: '8, 3, 15',
+    aurora: ['#FF7A59', '#FF3D7F', '#FFC15E', '#7B5CFF'],
+    blend: 'screen',
+    // Pe prună, luminile sunt deja lizibile; peste ele se scrie cu prună închisă (≥ 5:1).
+    accents: ['#FF7A59', '#FF3D7F', '#FFC15E'],
+    onAccent: '#1B0F2A',
+    secondaryGradient: ['#FFC15E', '#FF7A59'],
+    onSecondary: '#1B0F2A',
+    // Variante mai adânci decât luminile, ca textul alb al bannerului să rămână ≥ 4.5:1.
     ctaGradient: [
-      'radial-gradient(70% 120% at 10% 0%, #F29B5C66 0%, transparent 55%)',
-      'linear-gradient(115deg, #B8482A 0%, #8E3A44 38%, #3F5A73 72%, #22364B 100%)',
+      'radial-gradient(70% 120% at 10% 0%, #FFC15E40 0%, transparent 55%)',
+      'linear-gradient(115deg, #B8482A 0%, #8E2A5E 50%, #3E2A8C 100%)',
     ].join(', '),
-    imagery: { hero: seasideHero, footer: seasideFooter, overlayRgb: '20, 38, 56' },
+    imagery: { hero: seasideHero, footer: seasideFooter, overlayRgb: '27, 15, 42' },
   },
 }
 
 export const themeMeta: Record<ThemeId, { label: string; description: string }> = {
-  calm: { label: 'Calm', description: 'Verde-albăstrui și bej cald' },
-  seaside: { label: 'Răsărit la mare', description: 'Albastru marin, ambră și maci' },
+  calm: { label: 'Dimineață la mare', description: 'Aqua, cer și lavandă pe alb' },
+  seaside: { label: 'Apus la mare', description: 'Coral, magenta și ambră pe prună' },
 }
 
 export const DEFAULT_THEME_ID: ThemeId = 'calm'
@@ -112,29 +131,98 @@ export function isThemeId(value: unknown): value is ThemeId {
   return value === 'calm' || value === 'seaside'
 }
 
-const headingFont = '"Cormorant Garamond", "Playfair Display", Georgia, serif'
+const headingFont = '"Sora", "Inter", "Segoe UI", system-ui, sans-serif'
 const bodyFont = '"Inter", "Segoe UI", Roboto, system-ui, sans-serif'
 
-export function buildTheme(id: ThemeId): Theme {
+/** Variabilele CSS ale temei, scrise pe `:root`; index.css și componentele le citesc direct. */
+function cssVariables(palette: BrandPalette): Record<string, string> {
+  const [c1, c2, c3, c4] = palette.aurora
+  const [a1, a2, a3] = palette.accents
+  return {
+    '--bg': palette.background,
+    '--surface': palette.surface,
+    '--text': palette.text,
+    '--muted': palette.textMuted,
+    '--border': palette.border,
+    '--c1': c1,
+    '--c2': c2,
+    '--c3': c3,
+    '--c4': c4,
+    '--blend': palette.blend,
+    '--accent-1': a1,
+    '--accent-2': a2,
+    '--accent-3': a3,
+    '--on-accent': palette.onAccent,
+    '--secondary-1': palette.secondaryGradient[0],
+    '--secondary-2': palette.secondaryGradient[1],
+    '--on-secondary': palette.onSecondary,
+    // Secțiunile lasă aurora să se vadă; cardurile de sticlă sunt mai opace, pentru lizibilitate.
+    '--section': 'color-mix(in oklab, var(--surface) 40%, transparent)',
+    '--section-tint': 'color-mix(in oklab, var(--accent-1) 7%, color-mix(in oklab, var(--surface) 30%, transparent))',
+    '--glass': 'color-mix(in oklab, var(--surface) 65%, transparent)',
+  }
+}
+
+/**
+ * Lumina de sub cursor: un inel de 1.5px pe marginea cardului, centrat în --mx/--my
+ * (scrise de useSpotlight). Fără cursor, centrul stă în afara cardului și inelul nu se vede.
+ */
+const spotlightRing = {
+  content: '""',
+  position: 'absolute',
+  inset: 0,
+  height: 'auto',
+  opacity: 1,
+  borderRadius: 'inherit',
+  padding: '1.5px',
+  pointerEvents: 'none',
+  backgroundColor: 'transparent',
+  backgroundImage:
+    'radial-gradient(350px circle at var(--mx, -999px) var(--my, -999px), var(--accent, var(--c1)), var(--c2) 30%, transparent 60%)',
+  WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
+  WebkitMaskComposite: 'xor',
+  mask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
+  maskComposite: 'exclude',
+} as const
+
+interface BuildThemeOptions {
+  /**
+   * `false` pentru panoul de management: aceleași culori, dar fără sticlă, lumină sub cursor și
+   * ridicarea cardurilor — acolo cardurile țin tabele și formulare, nu decor.
+   */
+  ambient?: boolean
+}
+
+export function buildTheme(id: ThemeId, { ambient = true }: BuildThemeOptions = {}): Theme {
   const palette = palettes[id]
+
+  // Buton plin cu gradient care alunecă la hover; aceeași umbră în toate stările, ca să nu „sară”.
+  const gradientButton = (stops: string, ink: string) => ({
+    color: ink,
+    backgroundImage: `linear-gradient(120deg, ${stops})`,
+    backgroundSize: '200% auto',
+    boxShadow: '0 10px 30px -10px var(--c2)',
+    transition: 'background-position .6s ease, transform .2s ease, box-shadow .2s ease',
+    '&:hover': { backgroundPosition: '100% center', transform: 'translateY(-2px) scale(1.03)' },
+  })
 
   const theme = createTheme({
     palette: {
-      mode: 'light',
-      primary: { main: palette.primary, dark: palette.primaryDark, light: palette.primaryLight, contrastText: '#FFFFFF' },
-      secondary: { main: palette.secondary, dark: palette.secondaryDark, contrastText: palette.text },
+      mode: palette.mode,
+      primary: { main: palette.primary, dark: palette.primaryDark, light: palette.primaryLight, contrastText: palette.onAccent },
+      secondary: { main: palette.secondary, dark: palette.secondaryDark, contrastText: palette.onSecondary },
       background: { default: palette.background, paper: palette.surface },
       text: { primary: palette.text, secondary: palette.textMuted },
       divider: palette.border,
       brand: palette,
     },
-    shape: { borderRadius: 14 },
+    shape: { borderRadius: 18 },
     typography: {
       fontFamily: bodyFont,
-      h1: { fontFamily: headingFont, fontWeight: 600, fontSize: '3rem', lineHeight: 1.15, letterSpacing: '-0.5px' },
-      h2: { fontFamily: headingFont, fontWeight: 600, fontSize: '2.25rem', lineHeight: 1.2 },
-      h3: { fontFamily: headingFont, fontWeight: 600, fontSize: '1.75rem', lineHeight: 1.25 },
-      h4: { fontFamily: headingFont, fontWeight: 600, fontSize: '1.4rem' },
+      h1: { fontFamily: headingFont, fontWeight: 700, fontSize: '3.25rem', lineHeight: 1.1, letterSpacing: '-0.03em' },
+      h2: { fontFamily: headingFont, fontWeight: 600, fontSize: '2.25rem', lineHeight: 1.2, letterSpacing: '-0.02em' },
+      h3: { fontFamily: headingFont, fontWeight: 600, fontSize: '1.75rem', lineHeight: 1.25, letterSpacing: '-0.01em' },
+      h4: { fontFamily: headingFont, fontWeight: 600, fontSize: '1.4rem', letterSpacing: '-0.01em' },
       h5: { fontFamily: bodyFont, fontWeight: 600, fontSize: '1.15rem' },
       h6: { fontFamily: bodyFont, fontWeight: 600, fontSize: '1rem' },
       subtitle1: { fontSize: '1.125rem', lineHeight: 1.6, color: palette.textMuted },
@@ -145,20 +233,42 @@ export function buildTheme(id: ThemeId): Theme {
     components: {
       MuiCssBaseline: {
         styleOverrides: {
-          html: { scrollBehavior: 'smooth' },
-          body: {
-            backgroundColor: palette.background,
-            color: palette.text,
-            transition: 'background-color .3s ease, color .3s ease',
+          ':root': cssVariables(palette),
+          html: {
+            scrollBehavior: 'smooth',
+            // Fundalul stă pe <html> (deci pe canvas), ca aurora cu z-index negativ să rămână deasupra lui.
+            backgroundColor: 'var(--bg)',
+            transition: 'background-color .6s ease',
           },
-          '::selection': { backgroundColor: palette.secondary, color: palette.text },
+          body: {
+            backgroundColor: 'transparent',
+            color: palette.text,
+            transition: 'color .6s ease',
+          },
+          '::selection': { backgroundColor: palette.secondary, color: palette.onSecondary },
         },
       },
       MuiButton: {
-        defaultProps: { disableElevation: true },
         styleOverrides: {
-          root: { borderRadius: 999, paddingInline: 22, paddingBlock: 10 },
+          root: {
+            borderRadius: 999,
+            paddingInline: 22,
+            paddingBlock: 10,
+            transition: 'transform .2s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease',
+          },
           sizeLarge: { paddingInline: 30, paddingBlock: 13, fontSize: '1rem' },
+          ...(ambient && {
+            containedPrimary: gradientButton('var(--accent-1), var(--accent-2), var(--accent-3)', 'var(--on-accent)'),
+            containedSecondary: gradientButton('var(--secondary-1), var(--secondary-2), var(--secondary-1)', 'var(--on-secondary)'),
+            // Bordură în gradient la hover: un fundal pe padding-box acoperă gradientul de pe border-box.
+            outlined: {
+              '&:hover': {
+                borderColor: 'transparent',
+                background:
+                  'linear-gradient(var(--surface), var(--surface)) padding-box, linear-gradient(120deg, var(--accent-1), var(--accent-2)) border-box',
+              },
+            },
+          }),
         },
       },
       MuiPaper: {
@@ -170,24 +280,49 @@ export function buildTheme(id: ThemeId): Theme {
       MuiCard: {
         defaultProps: { elevation: 0 },
         styleOverrides: {
-          root: {
-            border: `1px solid ${palette.border}`,
-            borderRadius: 16,
-            transition: 'box-shadow .25s ease, transform .25s ease',
-            '&:hover': { boxShadow: `0 12px 32px rgba(${palette.shadowRgb}, 0.09)`, transform: 'translateY(-3px)' },
-          },
+          root: ambient
+            ? {
+                position: 'relative',
+                borderRadius: 24,
+                backgroundColor: 'var(--glass)',
+                backdropFilter: 'blur(16px) saturate(140%)',
+                border: '1px solid var(--border)',
+                transition: 'transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease',
+                '&::before': spotlightRing,
+                '@media (hover: hover)': {
+                  '&:hover': {
+                    transform: 'translateY(-6px)',
+                    boxShadow: '0 25px 60px -20px var(--accent, var(--c2))',
+                  },
+                },
+              }
+            : { border: `1px solid ${palette.border}`, borderRadius: 16 },
         },
       },
-      MuiChip: { styleOverrides: { root: { borderRadius: 8, fontWeight: 500 } } },
+      MuiChip: {
+        styleOverrides: {
+          root: { borderRadius: 999, fontWeight: 500 },
+          outlined: { borderColor: palette.border, backgroundColor: alpha(palette.primary, 0.06) },
+        },
+      },
       MuiTextField: { defaultProps: { variant: 'outlined', fullWidth: true } },
       MuiAccordion: {
         defaultProps: { disableGutters: true, elevation: 0 },
         styleOverrides: {
           root: {
             border: `1px solid ${palette.border}`,
-            borderRadius: 12,
+            borderRadius: 16,
             marginBottom: 12,
-            '&::before': { display: 'none' },
+            // MUI desenează separatorul în ::before; aici îl înlocuim cu inelul de lumină.
+            '&::before': ambient ? spotlightRing : { display: 'none' },
+            ...(ambient && {
+              backgroundColor: 'var(--glass)',
+              backdropFilter: 'blur(16px) saturate(140%)',
+              transition: 'border-color .35s ease, box-shadow .35s ease',
+              '&:first-of-type::before': { display: 'block' },
+              '&.Mui-expanded': { borderColor: 'var(--accent-1)', boxShadow: '0 18px 40px -24px var(--c2)' },
+              '&.Mui-expanded::before': { opacity: 1 },
+            }),
           },
         },
       },
