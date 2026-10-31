@@ -18,24 +18,24 @@ export default function SectionHeading({
   const centered = align === 'center'
 
   return (
-    <Box sx={{ textAlign: align, mb: { xs: 3, md: 4 } }}>
+    <Box data-reveal sx={{ textAlign: align, mb: { xs: 3, md: 4 } }}>
       {eyebrow && (
         <Typography
           component="p"
+          className="eyebrow"
           sx={{
-            fontSize: '0.8125rem',
+            fontSize: '0.75rem',
             fontWeight: 600,
-            letterSpacing: '0.18em',
+            letterSpacing: '0.16em',
             textTransform: 'uppercase',
-            color: 'secondary.dark',
-            mb: 1.25,
+            mb: 1.5,
           }}
         >
           {eyebrow}
         </Typography>
       )}
 
-      <Typography variant={component} component={component} sx={{ color: 'text.primary' }}>
+      <Typography variant={component} component={component} className="shine-text">
         {title}
       </Typography>
 

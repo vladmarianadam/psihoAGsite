@@ -11,6 +11,7 @@ interface PhotoImageProps {
   rounded?: number
   /** Poziția subiectului în cadru, pentru decupaje care taie fruntea sau bărbia. */
   objectPosition?: string
+  className?: string
 }
 
 /**
@@ -24,10 +25,12 @@ export default function PhotoImage({
   ratio = 4 / 5,
   rounded = 0,
   objectPosition = 'center 20%',
+  className,
 }: PhotoImageProps) {
   return (
     <Box
       component="img"
+      className={className}
       src={src}
       alt={alt}
       loading="lazy"

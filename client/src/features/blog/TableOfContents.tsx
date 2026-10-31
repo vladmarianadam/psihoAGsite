@@ -112,7 +112,7 @@ export default function TableOfContents({ html, minHeadings = 3 }: TableOfConten
       component="nav"
       variant="outlined"
       aria-label="Cuprinsul articolului"
-      sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 2, bgcolor: 'background.default' }}
+      sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 2, bgcolor: 'var(--glass)' }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
         <ListAltRoundedIcon aria-hidden="true" sx={{ fontSize: 20, color: 'secondary.dark' }} />

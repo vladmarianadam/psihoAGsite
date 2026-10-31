@@ -34,7 +34,7 @@ export default function NotFoundPage() {
               alignItems: 'center',
               justifyContent: 'center',
               color: 'primary.main',
-              backgroundColor: 'background.paper',
+              backgroundColor: 'var(--glass)',
               border: '1px solid',
               borderColor: 'divider',
               '& svg': { fontSize: '2.25rem' },

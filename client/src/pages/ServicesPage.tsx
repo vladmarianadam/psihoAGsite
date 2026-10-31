@@ -119,16 +119,16 @@ export default function ServicesPage() {
           )
         ) : (
           <Grid container spacing={3}>
-            {services.map((service) => (
-              <Grid key={service.id} size={{ xs: 12, sm: 6, lg: 4 }}>
-                <ServiceCard service={service} />
+            {services.map((service, index) => (
+              <Grid key={service.id} size={{ xs: 12, sm: 6, lg: 4 }} data-reveal sx={{ '--i': index % 3 }}>
+                <ServiceCard service={service} index={index} />
               </Grid>
             ))}
           </Grid>
         )}
       </Container>
 
-      <Box sx={{ bgcolor: 'background.paper', borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
+      <Box sx={{ bgcolor: 'var(--section)', borderTop: 1, borderBottom: 1, borderColor: 'divider' }}>
         <Container maxWidth="lg" sx={{ py: { xs: 6, md: 9 } }}>
           <SectionHeading
             eyebrow="Pas cu pas"

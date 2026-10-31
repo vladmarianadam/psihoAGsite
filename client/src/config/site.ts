@@ -30,6 +30,15 @@ export const site = {
     { day: 'Sâmbătă', hours: 'La cerere' },
     { day: 'Duminică', hours: 'Închis' },
   ],
+  /**
+   * Cifrele din hero (StatsStrip). Valori provizorii — de confirmat cu clientul înainte de
+   * publicare (plan §11); cifre inventate ar fi practică comercială înșelătoare.
+   */
+  stats: [
+    { value: 10, suffix: '+', label: 'ani de practică' },
+    { value: 1500, suffix: '+', label: 'ședințe susținute' },
+    { value: 300, suffix: '+', label: 'persoane însoțite' },
+  ],
   social: {
     facebook: '',
     instagram: '',

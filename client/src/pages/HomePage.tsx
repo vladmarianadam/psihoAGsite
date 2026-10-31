@@ -26,20 +26,19 @@ import {
 } from '@mui/material'
 import DOMPurify from 'dompurify'
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
-import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
-import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import PhoneRoundedIcon from '@mui/icons-material/PhoneRounded'
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded'
 import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined'
 
 import Seo from '../components/common/Seo'
+import StatsStrip from '../components/common/StatsStrip'
 import SectionHeading from '../components/common/SectionHeading'
-import PhotoImage from '../components/common/PhotoImage'
+import BlendedPortrait from '../components/common/BlendedPortrait'
+import WaveDivider from '../components/common/WaveDivider'
 import portretAdina from '../assets/adina-gghita-portret.jpg'
-import portretAdinaAlbNegru from '../assets/adina-gghita-portret-alb-negru.jpg'
 import CtaBanner from '../components/common/CtaBanner'
 import ServiceCard from '../components/cards/ServiceCard'
 import ArticleCard from '../components/cards/ArticleCard'
@@ -153,8 +152,8 @@ function htmlToPlainText(html: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Ambalajul comun al secțiunilor: Container + spațiere generoasă + fundal
-// alternativ, ca pagina să aibă ritm vizual.
+// Ambalajul comun al secțiunilor: Container + spațiere generoasă. Secțiunile
+// „paper”/„tint” sunt sticlă semi-transparentă peste aurora, legate prin valuri.
 // ---------------------------------------------------------------------------
 
 type SectionTone = 'default' | 'paper' | 'tint'
@@ -165,18 +164,23 @@ interface SectionProps {
   id?: string
 }
 
+const sectionFill: Record<SectionTone, string | null> = {
+  default: null,
+  paper: 'var(--section)',
+  tint: 'var(--section-tint)',
+}
+
 function Section({ children, tone = 'default', id }: SectionProps) {
+  const fill = sectionFill[tone]
+
   return (
-    <Box
-      component="section"
-      id={id}
-      sx={({ palette: { brand } }) => ({
-        py: { xs: 7, md: 11 },
-        bgcolor: tone === 'paper' ? 'background.paper' : 'transparent',
-        // „tint” poate fi o culoare plată sau un gradient, în funcție de temă.
-        backgroundImage: tone === 'tint' ? brand.sectionTint : 'none',
-      })}
-    >
+    <Box component="section" id={id} sx={{ position: 'relative', py: { xs: 7, md: 11 }, bgcolor: fill ?? 'transparent' }}>
+      {fill && (
+        <>
+          <WaveDivider edge="top" fill={fill} />
+          <WaveDivider edge="bottom" fill={fill} />
+        </>
+      )}
       <Container maxWidth="lg">{children}</Container>
     </Box>
   )
@@ -184,16 +188,24 @@ function Section({ children, tone = 'default', id }: SectionProps) {
 
 interface CheckItemProps {
   children: ReactNode
+  /** Poziția în listă — decalează apariția și desenarea bifei. */
+  index?: number
 }
 
-/** Rând de listă cu bifă, folosit în „Despre mine” și „Rezultate”. */
-function CheckItem({ children }: CheckItemProps) {
+/** Rând de listă cu bifă care se desenează singură la apariție; folosit în „Despre mine” și „Rezultate”. */
+function CheckItem({ children, index = 0 }: CheckItemProps) {
   return (
-    <Stack direction="row" spacing={1.5} alignItems="flex-start">
-      <CheckCircleOutlineRoundedIcon
+    <Stack direction="row" spacing={1.5} alignItems="flex-start" data-reveal sx={{ '--i': index }}>
+      <Box
+        component="svg"
+        viewBox="0 0 24 24"
         aria-hidden="true"
-        sx={{ fontSize: 21, mt: '3px', flexShrink: 0, color: 'secondary.dark' }}
-      />
+        className="draw-check"
+        sx={{ width: 22, height: 22, mt: '3px', flexShrink: 0, color: 'var(--accent-3)' }}
+      >
+        <circle cx="12" cy="12" r="9.5" pathLength={1} />
+        <path d="M7.5 12.5l3 3 6-6.5" pathLength={1} />
+      </Box>
       <Typography component="span" sx={{ color: 'text.secondary' }}>
         {children}
       </Typography>
@@ -204,69 +216,56 @@ function CheckItem({ children }: CheckItemProps) {
 // -------------------------------------------------------------- 1. Hero ---
 
 function HeroSection() {
-  const { palette } = useTheme()
-  const { brand } = palette
-  const imagery = brand.imagery
-  // Cu fotografie de fundal, textul trece pe deschis; altfel rămân gradientele discrete.
+  const imagery = useTheme().palette.brand.imagery
+  // Cu fotografie de fundal, textul trece pe deschis; fără ea, rămâne direct pe aurora.
   const onImage = Boolean(imagery)
-
-  const heroBackground = imagery
-    ? [
-        `linear-gradient(100deg, rgba(${imagery.overlayRgb}, 0.88) 0%, rgba(${imagery.overlayRgb}, 0.66) 46%, rgba(${imagery.overlayRgb}, 0.14) 100%)`,
-        `linear-gradient(180deg, rgba(${imagery.overlayRgb}, 0.10) 0%, transparent 25%, transparent 70%, rgba(${imagery.overlayRgb}, 0.50) 100%)`,
-        `url(${imagery.hero})`,
-      ].join(', ')
-    : [
-        `radial-gradient(90% 110% at 6% 0%, ${brand.secondary}2E 0%, transparent 58%)`,
-        `radial-gradient(80% 100% at 100% 24%, ${brand.primaryLight}26 0%, transparent 60%)`,
-      ].join(', ')
-
-  const eyebrowColor = onImage ? brand.secondary : palette.secondary.dark
-  const bodyColor = onImage ? 'rgba(255, 255, 255, 0.84)' : palette.text.secondary
+  const bodyColor = onImage ? 'rgba(255, 255, 255, 0.86)' : 'text.secondary'
 
   return (
     <Box
       component="section"
       sx={{
         position: 'relative',
-        overflow: 'hidden',
         // Cu fotografie, secțiunea urcă sub bara de navigare (transparentă), ca imaginea să
         // umple tot capul paginii; înălțimea barei e compensată prin padding.
         mt: onImage ? { xs: -8.5, md: -10 } : 0,
         pt: onImage ? { xs: 6 + 8.5, md: 12 + 10 } : { xs: 6, md: 10 },
-        pb: { xs: onImage ? 11 : 7, md: onImage ? 16 : 12 },
+        pb: { xs: 7, md: 10 },
         color: onImage ? 'common.white' : 'text.primary',
-        backgroundImage: heroBackground,
-        backgroundSize: 'cover',
-        backgroundPosition: { xs: 'center 28%', md: 'center 36%' },
-        backgroundRepeat: 'no-repeat',
       }}
     >
+      {imagery && (
+        // Marea în amurg se stinge spre jos în aurora, fără marginea dreaptă a unei imagini.
+        <Box
+          aria-hidden="true"
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: [
+              `linear-gradient(100deg, rgba(${imagery.overlayRgb}, 0.88) 0%, rgba(${imagery.overlayRgb}, 0.62) 46%, rgba(${imagery.overlayRgb}, 0.12) 100%)`,
+              `url(${imagery.hero})`,
+            ].join(', '),
+            backgroundSize: 'cover',
+            backgroundPosition: { xs: 'center 28%', md: 'center 36%' },
+            backgroundRepeat: 'no-repeat',
+            WebkitMaskImage: 'linear-gradient(to bottom, #000 60%, transparent)',
+            maskImage: 'linear-gradient(to bottom, #000 60%, transparent)',
+          }}
+        />
+      )}
+
       <Container maxWidth="lg" sx={{ position: 'relative' }}>
         <Grid container spacing={{ xs: 5, md: 7 }} alignItems="center">
           <Grid size={{ xs: 12, md: 7 }}>
             <Typography
               component="p"
-              sx={{
-                fontSize: '0.8125rem',
-                fontWeight: 600,
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color: eyebrowColor,
-              }}
+              className="eyebrow"
+              sx={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase' }}
             >
               {site.role}
             </Typography>
 
-            <Typography
-              variant="h1"
-              sx={{
-                mt: 1.5,
-                maxWidth: '18ch',
-                color: 'inherit',
-                textShadow: onImage ? `0 2px 24px rgba(${imagery?.overlayRgb}, 0.45)` : 'none',
-              }}
-            >
+            <Typography variant="h1" className="shine-text" sx={{ mt: 2, maxWidth: '18ch' }}>
               {site.name}
             </Typography>
 
@@ -281,14 +280,7 @@ function HeroSection() {
             </Typography>
 
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4.5 }}>
-              <Button
-                component={RouterLink}
-                to="/programare"
-                size="large"
-                variant="contained"
-                color={onImage ? 'secondary' : 'primary'}
-                sx={onImage ? { boxShadow: `0 12px 30px ${brand.secondary}59` } : undefined}
-              >
+              <Button component={RouterLink} to="/programare" size="large" variant="contained">
                 Solicită o programare
               </Button>
               <Button
@@ -297,18 +289,7 @@ function HeroSection() {
                 size="large"
                 variant="outlined"
                 startIcon={<PhoneRoundedIcon />}
-                sx={
-                  onImage
-                    ? {
-                        color: 'common.white',
-                        borderColor: 'rgba(255, 255, 255, 0.55)',
-                        '&:hover': {
-                          borderColor: 'common.white',
-                          backgroundColor: 'rgba(255, 255, 255, 0.10)',
-                        },
-                      }
-                    : undefined
-                }
+                sx={onImage ? { color: 'common.white', borderColor: 'rgba(255, 255, 255, 0.55)' } : undefined}
               >
                 {site.phone}
               </Button>
@@ -316,56 +297,14 @@ function HeroSection() {
           </Grid>
 
           <Grid size={{ xs: 12, md: 5 }}>
-            <Box
-              sx={{
-                borderRadius: 3,
-                overflow: 'hidden',
-                border: '1px solid',
-                borderColor: onImage ? 'rgba(255, 255, 255, 0.35)' : 'divider',
-                boxShadow: onImage
-                  ? `0 30px 70px rgba(${imagery?.overlayRgb}, 0.45)`
-                  : `0 24px 60px rgba(${brand.shadowRgb}, 0.10)`,
-              }}
-            >
-              <PhotoImage
-                src={portretAdina}
-                alt={`${site.shortName}, ${site.role.toLowerCase()}`}
-                ratio={4 / 5}
-              />
-            </Box>
+            <BlendedPortrait src={portretAdina} alt={`${site.shortName}, ${site.role.toLowerCase()}`} />
           </Grid>
         </Grid>
-      </Container>
 
-      {/* Val decorativ care face tranziția către secțiunea următoare (doar cu fotografie). */}
-      {onImage && (
-        <Box
-          component="svg"
-          aria-hidden="true"
-          viewBox="0 0 1440 90"
-          preserveAspectRatio="none"
-          sx={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: -1,
-            width: '100%',
-            height: { xs: 44, md: 90 },
-            display: 'block',
-            color: 'background.paper',
-          }}
-        >
-          <path
-            d="M0 52 C 180 96, 360 96, 540 58 S 900 6, 1100 40 S 1360 84, 1440 44 L1440 90 L0 90 Z"
-            fill="currentColor"
-          />
-          <path
-            d="M0 70 C 240 100, 480 88, 720 62 S 1200 24, 1440 66 L1440 90 L0 90 Z"
-            fill="currentColor"
-            opacity="0.55"
-          />
+        <Box sx={{ mt: { xs: 5, md: 7 } }}>
+          <StatsStrip items={site.stats} />
         </Box>
-      )}
+      </Container>
     </Box>
   )
 }
@@ -392,48 +331,39 @@ function TrustBarSection() {
   ]
 
   return (
-    <Box
-      component="section"
-      sx={{
-        py: { xs: 4, md: 5 },
-        borderTop: '1px solid',
-        borderBottom: '1px solid',
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
-      }}
-    >
+    <Box component="section" sx={{ pb: { xs: 4, md: 6 } }}>
       <Container maxWidth="lg">
-        <Grid container spacing={{ xs: 3, md: 4 }}>
-          {items.map((item) => (
-            <Grid key={item.title} size={{ xs: 12, md: 4 }}>
-              <Stack direction="row" spacing={2} alignItems="flex-start">
-                <Box
-                  aria-hidden="true"
-                  sx={{
-                    width: 44,
-                    height: 44,
-                    flexShrink: 0,
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    bgcolor: 'background.default',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    '& svg': { fontSize: 22, color: 'primary.main' },
-                  }}
-                >
-                  {item.icon}
-                </Box>
-                <Box>
-                  <Typography component="p" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                    {item.title}
-                  </Typography>
-                  <Typography variant="body2" sx={{ mt: 0.5, color: 'text.secondary' }}>
-                    {item.text}
-                  </Typography>
-                </Box>
-              </Stack>
+        <Grid container spacing={{ xs: 2, md: 3 }}>
+          {items.map((item, index) => (
+            <Grid key={item.title} size={{ xs: 12, md: 4 }} data-reveal sx={{ '--i': index }}>
+              <Card sx={{ height: '100%', p: { xs: 2, md: 2.5 }, '--accent': `var(--c${index + 1})` }}>
+                <Stack direction="row" spacing={2} alignItems="flex-start">
+                  <Box
+                    aria-hidden="true"
+                    sx={{
+                      width: 44,
+                      height: 44,
+                      flexShrink: 0,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'color-mix(in oklab, var(--accent) 20%, transparent)',
+                      '& svg': { fontSize: 22, color: 'color-mix(in oklab, var(--accent) 65%, var(--text))' },
+                    }}
+                  >
+                    {item.icon}
+                  </Box>
+                  <Box>
+                    <Typography component="p" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                      {item.title}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 0.5, color: 'text.secondary' }}>
+                      {item.text}
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Card>
             </Grid>
           ))}
         </Grid>
@@ -448,21 +378,9 @@ function AboutSection() {
   return (
     <Section>
       <Grid container spacing={{ xs: 4, md: 7 }} alignItems="center">
-        <Grid size={{ xs: 12, md: 5 }}>
-          <Box
-            sx={{
-              borderRadius: 3,
-              overflow: 'hidden',
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <PhotoImage
-              src={portretAdinaAlbNegru}
-              alt={`Portret ${site.shortName}`}
-              ratio={4 / 5}
-            />
-          </Box>
+        <Grid size={{ xs: 12, md: 5 }} data-reveal>
+          {/* Portretul color: varianta alb-negru făcea secțiunea să pară tristă. */}
+          <BlendedPortrait src={portretAdina} alt={`Portret ${site.shortName}`} />
         </Grid>
 
         <Grid size={{ xs: 12, md: 7 }}>
@@ -493,9 +411,9 @@ function AboutSection() {
           </Typography>
 
           <Grid container spacing={1.5}>
-            {competencies.map((item) => (
+            {competencies.map((item, index) => (
               <Grid key={item} size={{ xs: 12, sm: 6 }}>
-                <CheckItem>{item}</CheckItem>
+                <CheckItem index={index}>{item}</CheckItem>
               </Grid>
             ))}
           </Grid>
@@ -545,9 +463,9 @@ function ServicesSection({ services, loading }: ServicesSectionProps) {
         </Grid>
       ) : (
         <Grid container spacing={{ xs: 2.5, md: 3 }}>
-          {featured.map((service) => (
-            <Grid key={service.id} size={{ xs: 12, sm: 6, lg: 3 }}>
-              <ServiceCard service={service} />
+          {featured.map((service, index) => (
+            <Grid key={service.id} size={{ xs: 12, sm: 6, lg: 3 }} data-reveal sx={{ '--i': index }}>
+              <ServiceCard service={service} index={index} />
             </Grid>
           ))}
         </Grid>
@@ -583,8 +501,10 @@ function BenefitsSection() {
 
         <Grid size={{ xs: 12, md: 7 }}>
           <Stack spacing={2.5}>
-            {benefits.map((benefit) => (
-              <CheckItem key={benefit}>{benefit}</CheckItem>
+            {benefits.map((benefit, index) => (
+              <CheckItem key={benefit} index={index}>
+                {benefit}
+              </CheckItem>
             ))}
           </Stack>
         </Grid>
@@ -619,21 +539,22 @@ function PackagesSection({ services }: PackagesSectionProps) {
       />
 
       <Grid container spacing={{ xs: 2.5, md: 3 }}>
-        {packageOptions.map((option) => {
+        {packageOptions.map((option, index) => {
           const listTotal = unitPrice * option.sessions
           // Rotunjire la 10 lei, ca prețurile afișate să rămână ușor de citit.
           const total = Math.round((listTotal * (1 - option.discount)) / 10) * 10
           const perSession = Math.round(total / option.sessions)
 
           return (
-            <Grid key={option.sessions} size={{ xs: 12, md: 4 }}>
+            <Grid key={option.sessions} size={{ xs: 12, md: 4 }} data-reveal sx={{ '--i': index }}>
               <Card
+                // Pachetul evidențiat primește bordura conică care se rotește lent (index.css).
+                className={option.highlighted ? 'glow-ring' : undefined}
                 sx={{
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
-                  borderColor: option.highlighted ? 'primary.main' : 'divider',
-                  bgcolor: 'background.paper',
+                  borderColor: option.highlighted ? 'transparent' : 'divider',
                 }}
               >
                 <CardContent sx={{ p: { xs: 2.5, md: 3 }, display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -707,6 +628,45 @@ function PackagesSection({ services }: PackagesSectionProps) {
 
 // -------------------------------------- 7. „Ai nevoie de un psiholog?” ---
 
+/**
+ * Glob luminos care „respiră”: 4s se mărește (inspiră), 4s se micșorează (expiră). Pur decorativ,
+ * ascuns cititoarelor de ecran; la mișcare redusă rămâne nemișcat (index.css).
+ */
+function BreathingOrb() {
+  const labelSx = {
+    position: 'absolute',
+    fontSize: '0.8125rem',
+    fontWeight: 600,
+    letterSpacing: '0.18em',
+    textTransform: 'uppercase',
+    color: 'var(--on-accent)',
+  } as const
+
+  return (
+    <Box
+      aria-hidden="true"
+      sx={{ position: 'relative', width: 150, height: 150, mx: 'auto', mb: { xs: 4, md: 5 }, display: 'grid', placeItems: 'center' }}
+    >
+      <Box
+        className="breath-orb"
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle at 35% 30%, var(--accent-3), var(--accent-1) 55%, var(--accent-2))',
+          boxShadow: '0 0 60px 10px color-mix(in oklab, var(--c2) 45%, transparent)',
+        }}
+      />
+      <Box component="span" className="breath-label" sx={labelSx}>
+        inspiră
+      </Box>
+      <Box component="span" className="breath-label breath-label--out" sx={labelSx}>
+        expiră
+      </Box>
+    </Box>
+  )
+}
+
 function WhenToAskSection() {
   return (
     <Section>
@@ -717,21 +677,14 @@ function WhenToAskSection() {
         align="center"
       />
 
+      <BreathingOrb />
+
       <Grid container spacing={{ xs: 2.5, md: 3 }}>
-        {signals.map((signal) => (
-          <Grid key={signal} size={{ xs: 12, sm: 6, lg: 4 }}>
-            <Box
-              sx={{
-                height: '100%',
-                p: { xs: 2.5, md: 3 },
-                borderRadius: 2,
-                border: '1px solid',
-                borderColor: 'divider',
-                bgcolor: 'background.paper',
-              }}
-            >
+        {signals.map((signal, index) => (
+          <Grid key={signal} size={{ xs: 12, sm: 6, lg: 4 }} data-reveal sx={{ '--i': index % 3 }}>
+            <Card sx={{ height: '100%', p: { xs: 2.5, md: 3 } }}>
               <Typography sx={{ color: 'text.secondary' }}>{signal}</Typography>
-            </Box>
+            </Card>
           </Grid>
         ))}
       </Grid>
@@ -791,7 +744,7 @@ function TestimonialsSection({ items, loading }: TestimonialsSectionProps) {
         align="center"
       />
 
-      <Box sx={{ position: 'relative' }}>
+      <Box data-reveal sx={{ position: 'relative' }}>
         <Fade in key={current} timeout={450}>
           <Box>
             <Grid container spacing={{ xs: 2.5, md: 3 }}>
@@ -848,6 +801,40 @@ function TestimonialsSection({ items, loading }: TestimonialsSectionProps) {
 
 // ----------------------------------------------------------------- 9. FAQ ---
 
+/**
+ * Plus care devine minus: MUI rotește deja iconița cu 180° la deschidere, iar bara verticală se
+ * culcă în același timp, deci rotirea se termină cu o linie orizontală.
+ */
+function PlusMinusIcon() {
+  const bar = {
+    content: '""',
+    position: 'absolute',
+    left: 0,
+    top: '50%',
+    width: '100%',
+    height: 2,
+    mt: '-1px',
+    borderRadius: 1,
+    bgcolor: 'currentColor',
+    transition: 'transform .35s ease',
+  } as const
+
+  return (
+    <Box
+      aria-hidden="true"
+      sx={{
+        position: 'relative',
+        width: 16,
+        height: 16,
+        color: 'var(--accent-1)',
+        '&::before': bar,
+        '&::after': { ...bar, transform: 'rotate(90deg)' },
+        '.Mui-expanded > &::after, .Mui-expanded &::after': { transform: 'rotate(0deg)' },
+      }}
+    />
+  )
+}
+
 interface FaqSectionProps {
   items: FaqItemDto[]
   loading: boolean
@@ -881,14 +868,16 @@ function FaqSection({ items, loading }: FaqSectionProps) {
       />
 
       <Box sx={{ maxWidth: 860, mx: 'auto' }}>
-        {items.map((item) => (
+        {items.map((item, index) => (
           <Accordion
             key={item.id}
             expanded={expanded === item.id}
             onChange={(_, isExpanded) => setExpanded(isExpanded ? item.id : false)}
+            data-reveal
+            sx={{ '--i': index }}
           >
             <AccordionSummary
-              expandIcon={<ExpandMoreRoundedIcon />}
+              expandIcon={<PlusMinusIcon />}
               aria-controls={`faq-panel-${item.id}`}
               id={`faq-header-${item.id}`}
               sx={{ px: { xs: 2, md: 2.5 }, py: 0.5 }}
@@ -941,8 +930,8 @@ function ArticlesSection({ articles, loading }: ArticlesSectionProps) {
         </Grid>
       ) : (
         <Grid container spacing={{ xs: 2.5, md: 3 }}>
-          {articles.map((article) => (
-            <Grid key={article.id} size={{ xs: 12, sm: 6, md: 4 }}>
+          {articles.map((article, index) => (
+            <Grid key={article.id} size={{ xs: 12, sm: 6, md: 4 }} data-reveal sx={{ '--i': index }}>
               <ArticleCard article={article} />
             </Grid>
           ))}
@@ -962,21 +951,15 @@ function ArticlesSection({ articles, loading }: ArticlesSectionProps) {
 
 function ClosingSection() {
   return (
-    <Section tone="tint">
-      <CtaBanner />
+    // Fără ton propriu: footerul are deja un val pe marginea de sus; două valuri s-ar suprapune.
+    <Section>
+      <Box data-reveal>
+        <CtaBanner />
+      </Box>
 
       <Grid container spacing={{ xs: 3, md: 4 }} sx={{ mt: { xs: 4, md: 5 } }}>
-        <Grid size={{ xs: 12, md: 7 }}>
-          <Box
-            sx={{
-              height: '100%',
-              p: { xs: 2.5, md: 3.5 },
-              borderRadius: 2,
-              border: '1px solid',
-              borderColor: 'divider',
-              bgcolor: 'background.paper',
-            }}
-          >
+        <Grid size={{ xs: 12, md: 7 }} data-reveal>
+          <Card sx={{ height: '100%', p: { xs: 2.5, md: 3.5 } }}>
             <Typography variant="h6" component="h3" sx={{ color: 'text.primary' }}>
               Programul cabinetului
             </Typography>
@@ -1001,22 +984,11 @@ function ClosingSection() {
               Ședințele se stabilesc din timp, pe intervale fixe. Dacă nu găsești un moment potrivit
               în program, scrie-mi și căutăm o soluție.
             </Typography>
-          </Box>
+          </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 5 }}>
-          <Box
-            sx={{
-              height: '100%',
-              p: { xs: 2.5, md: 3.5 },
-              borderRadius: 2,
-              border: '1px solid',
-              borderColor: 'divider',
-              bgcolor: 'background.paper',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
+        <Grid size={{ xs: 12, md: 5 }} data-reveal sx={{ '--i': 1 }}>
+          <Card sx={{ height: '100%', p: { xs: 2.5, md: 3.5 }, display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h6" component="h3" sx={{ color: 'text.primary' }}>
               Contact direct
             </Typography>
@@ -1040,7 +1012,7 @@ function ClosingSection() {
                 {site.email}
               </Button>
             </Stack>
-          </Box>
+          </Card>
         </Grid>
       </Grid>
     </Section>

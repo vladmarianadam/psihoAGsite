@@ -6,6 +6,7 @@ import Layout from './components/layout/Layout'
 import ScrollToTop from './components/common/ScrollToTop'
 import { AuthProvider } from './features/management/hooks/useAuth'
 import ProtectedRoute from './features/management/components/ProtectedRoute'
+import AdminTheme from './features/management/components/AdminTheme'
 
 import HomePage from './pages/HomePage'
 import AboutPage from './pages/AboutPage'
@@ -69,19 +70,23 @@ export default function App() {
         <Route
           path="management/login"
           element={
-            <Suspense fallback={<RouteFallback />}>
-              <LoginPage />
-            </Suspense>
+            <AdminTheme>
+              <Suspense fallback={<RouteFallback />}>
+                <LoginPage />
+              </Suspense>
+            </AdminTheme>
           }
         />
         <Route
           path="management"
           element={
-            <ProtectedRoute>
-              <Suspense fallback={<RouteFallback />}>
-                <AdminLayout />
-              </Suspense>
-            </ProtectedRoute>
+            <AdminTheme>
+              <ProtectedRoute>
+                <Suspense fallback={<RouteFallback />}>
+                  <AdminLayout />
+                </Suspense>
+              </ProtectedRoute>
+            </AdminTheme>
           }
         >
           <Route index element={<DashboardPage />} />
