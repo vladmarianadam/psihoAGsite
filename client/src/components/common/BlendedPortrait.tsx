@@ -3,17 +3,13 @@ import { Box } from '@mui/material'
 import PhotoImage from './PhotoImage'
 
 interface BlendedPortraitProps {
-  /**
-   * Cel mai bun rezultat îl dă un decupaj fără fundal (PNG/WebP transparent): atunci haloul se vede
-   * direct în jurul siluetei. Până atunci, masca estompată și multiply (tema „calm”) ascund
-   * fundalul de studio. Pentru decupaj se schimbă doar această sursă.
-   */
+  /** Fotografia; un decupaj fără fundal (PNG/WebP transparent) s-ar pune tot aici. */
   src: string
   alt: string
   ratio?: number
 }
 
-/** Portret fără marginile unui dreptunghi: formă organică, margini estompate, halo care se rotește. */
+/** Portret în fereastră arcuită, cu bordură în gradient care se rotește lent (stiluri în index.css). */
 export default function BlendedPortrait({ src, alt, ratio = 4 / 5 }: BlendedPortraitProps) {
   return (
     <Box className="portrait-wrap">
